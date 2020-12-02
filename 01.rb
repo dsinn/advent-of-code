@@ -1,11 +1,5 @@
 #!/usr/bin/env ruby
-filename = '01.txt'
-raise StandardError.new "#{filename} does not exist in the current working directory." unless File.file? filename
-
-numbers = []
-File.open(filename, 'r').each_line do |line|
-  numbers << line.to_i
-end
+numbers = File.readlines('01.txt').map(&:to_i)
 
 target = 2020
 cache = {} # Just for existence

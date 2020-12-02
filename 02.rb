@@ -1,10 +1,7 @@
 #!/usr/bin/env ruby
-filename = '02.txt'
-raise StandardError.new "#{filename} does not exist in the current working directory." unless File.file? filename
-
 part1_count = 0
 part2_count = 0
-File.open(filename, 'r').each_line do |line|
+File.open('02.txt', 'r').each_line do |line|
   matches = /^(\d+)-(\d+) (.): (.+)$/.match(line)
   raise StandardError.new "Could not match #{line}" unless matches
 
