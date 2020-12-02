@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 filename = '01.txt'
 raise StandardError.new "#{filename} does not exist in the current working directory." unless File.file? filename
 
@@ -13,7 +14,7 @@ numbers.each do |number|
   diff = target - number
 
   if cache.has_key? diff
-    puts number * diff
+    puts "Part 1: #{number * diff}"
     break
   end
 end
@@ -27,7 +28,7 @@ end
 numbers.each do |number|
   diff = target - number
   if products.has_key? diff # TODO: Add extra condition to avoid picking an already used number
-    puts products[diff] * number
+    puts "Part 2: #{products[diff] * number}"
     break
   end
 end
