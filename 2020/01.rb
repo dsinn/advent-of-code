@@ -2,27 +2,26 @@
 numbers = File.readlines('01.txt').map(&:to_i)
 
 target = 2020
-cache = {} # Just for existence
-numbers.each do |number|
-  cache[number] = true
+indices = Hash[(0..numbers.size).zip numbers].invert
+numbers.each_with_index do |number, i|
   diff = target - number
 
-  if cache.has_key? diff
+  if indices.has_key?(diff) && indices[diff] != i # Also check we're not using the same expenditure twice
     puts "Part 1: #{number * diff}"
     break
   end
 end
 
-products = {} # Maps from sums of two numbers -> their product
+indices = {} # Maps from sum of two numbers -> indices of the operands used
 numbers.each_with_index do |number, i|
   for j in 0..i - 1
-    products[number + numbers[j]] = number * numbers[j]
+    indices[number + numbers[j]] = [i, j]
   end
 end
 numbers.each do |number|
   diff = target - number
-  if products.has_key? diff # TODO: Add extra condition to avoid picking an already used number
-    puts "Part 2: #{products[diff] * number}"
+  if indices.has_key?(diff) && !indices[diff].include?(number) # Also check we're not using the same expenditure twice
+    puts "Part 2: #{number * indices[diff].map{ |x| numbers[x] }.inject(:*)}"
     break
   end
 end
