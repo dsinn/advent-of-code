@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-groups_strings = File.read('06.txt').rstrip.split(/\n{2,}/)
+groups_strings = File.read("#{__dir__}/06.txt").rstrip.split(/\n{2,}/)
 part1 = 0
 part2 = 0
 groups_strings.each do |group_string|

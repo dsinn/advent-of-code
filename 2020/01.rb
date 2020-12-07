@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-numbers = File.readlines('01.txt').map(&:to_i)
+numbers = File.readlines("#{__dir__}/01.txt").map(&:to_i)
 
 target = 2020
 indices = Hash[(0..numbers.size).zip numbers].invert

@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 part1_count = 0
 part2_count = 0
-File.open('02.txt', 'r').each_line do |line|
+File.open("#{__dir__}/02.txt", 'r').each_line do |line|
   matches = /^(\d+)-(\d+) (.): (.+)$/.match(line)
   raise StandardError.new "Could not match #{line}" unless matches
 

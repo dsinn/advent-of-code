@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 trees = []
-File.open('03.txt', 'r').each_line do |line|
+File.open("#{__dir__}/03.txt", 'r').each_line do |line|
   trees << line.rstrip.split('').map{|c| c == '#' ? 1 : 0}
 end
 

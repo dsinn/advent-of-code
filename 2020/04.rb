@@ -12,7 +12,7 @@ value_regexes = [
   /pid:\d{9}/,
 ].map{ |regex| Regexp.new("\\b#{regex.source}\\b") }
 
-passports = File.read('04.txt').split(/\n{2,}/)
+passports = File.read("#{__dir__}/04.txt").split(/\n{2,}/)
 
 def count_valid_passports_from_regexes(passports, regexes)
   valid_count = 0

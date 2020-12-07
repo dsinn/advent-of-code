@@ -4,7 +4,7 @@ require 'set'
 min = Float::INFINITY
 max = 0
 seats = {} # Existence map
-File.open('05.txt', 'r').each_line.each do |line|
+File.open("#{__dir__}/05.txt", 'r').each_line.each do |line|
   seat = line.gsub(/[FBLR]/, 'F' => '0', 'B' => '1', 'L' => '0', 'R' => '1').to_i(2)
   seats[seat] = true
 
