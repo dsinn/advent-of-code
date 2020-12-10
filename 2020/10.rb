@@ -25,11 +25,14 @@ for i in 1 ... joltages.count
 end
 one_chains[consecutives_ones] += 1
 
-puts joltages.inspect
-puts one_chains.inspect
-puts differences.inspect
+combinations = [1, 1, 2] # f(n) = number of binary strings of length n that don't contain "000"
+next_term = combinations.inject(:+)
+for i in 3 .. one_chains.keys.max
+  combinations << next_term
+  next_term += combinations[i - 2] + combinations[i - 1]
+end
 
 puts "Part 1: #{differences[1] * differences[3]}"
 
-# TODO: Figure out the general formula to deal with "one_chains" that are longer than 4
-puts "Part 2: #{2 ** one_chains[2] * 4 ** one_chains[3] * 7 ** one_chains[4]}"
+print 'Part 2: '
+puts one_chains.map { |k, v| combinations[k] ** v }.inject(:*)
