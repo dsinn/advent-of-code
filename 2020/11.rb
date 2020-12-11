@@ -28,9 +28,8 @@ def compute_end_state(state, chair_count_method, occupied_chair_tolerance)
       end
     end
     state = new_state
-    break unless has_changed
+    return state unless has_changed
   end
-  state
 end
 
 def count_occupied_adjacent_seats(state, y, x)
@@ -50,10 +49,9 @@ def visibly_occupied_seats_in_direction(state, y, x, y_step, x_step)
   loop do
     y += y_step
     x += x_step
-    break unless (0...state.count) === y && (0...state[y].count) === x
+    return 0 unless (0...state.count) === y && (0...state[y].count) === x
     return state[y][x] unless state[y][x].nil?
   end
-  0
 end
 
 def count_occupied_seats(state)
