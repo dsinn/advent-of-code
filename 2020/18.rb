@@ -1,10 +1,11 @@
 #!/usr/bin/env ruby
 
 def advent_eval(expr, operators)
-  left_parens_index = expr.index('(')
-  if left_parens_index
+  parenthesis_indices = expr.enum_for(:scan, /[\(\)]/).map { Regexp.last_match.begin(0) }
+  unless parenthesis_indices.empty?
+    left_parens_index = parenthesis_indices.shift
     level = 1
-    for i in left_parens_index + 1 ... expr.length
+    parenthesis_indices.each do |i|
       case expr[i]
       when '('
         level += 1
