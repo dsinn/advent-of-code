@@ -29,11 +29,7 @@ end
 def execute(rules, messages)
   $pattern_cache = {}
   regex = Regexp.new("^(?:#{get_rule rules, 0})$")
-  count = 0
-  messages.each do |message|
-    count += 1 if regex =~ message
-  end
-  count
+  messages.count { |message| regex =~ message }
 end
 
 puts "Part 1: #{execute rules, messages}"
