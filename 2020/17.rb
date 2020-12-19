@@ -9,23 +9,8 @@ $neighbour_vectors_4d = [-1, 0, 1].product([-1, 0, 1], [-1, 0, 1], [-1, 0, 1])
 $neighbour_vectors_4d.delete_at($neighbour_vectors_4d.count / 2) # [0, 0, 0, 0]
 
 def count_active_cubes(state)
-  # @TODO: Use recursion, but figure out how to avoid double-counting.
-  # return state.map { |_, value| count_active_cubes(value) }.inject(:+) if state.is_a? Hash
-  # state
-  count = 0
-  state.each do |z, subspace_3d|
-    subspace_3d.each do |w, subspace_2d|
-      subspace_2d.each do |_x, subspace_1d|
-        subspace_1d.each do |_y, cube|
-          operand = cube
-          operand *= 2 if z > 0
-          operand *= 2 if w > 0
-          count += operand
-        end
-      end
-    end
-  end
-  count
+  return state.map { |_, value| count_active_cubes(value) }.inject(:+) if state.is_a? Hash
+  state
 end
 
 def count_active_neighbours(state, in_4d, x, y, z, w = 0)
@@ -107,14 +92,8 @@ def execute(in_4d, cycles)
     draw_state state
   end
 
-  # @TODO
-  # if in_4d
-  #   # Multiply quadrant by 4, then subtract the double-counting of the axes and centre subspace.
-  #   4 * count_active_cubes(state) - ? * count_active_cubes(state[0]) - ? * state.map { |w, substate| count_active_cubes(w === 0 ? substate : 0) }.inject(:+) + ? * count_active_cubes(state[0][0])
-  # else
-  #   2 * count_active_cubes(state) - count_active_cubes(state[0][0])
-  # end
-  count_active_cubes(state)
+  # Multiply quadrant by 4, then subtract the double-counting of the axes and centre subspace.
+  4 * count_active_cubes(state) - 2 * count_active_cubes(state[0]) - 2 * state.map { |_z, substate| count_active_cubes(substate.dig(0) || 0) }.inject(:+) + count_active_cubes(state.dig(0, 0) || 0)
 end
 
 part1 = execute(false, 6)
