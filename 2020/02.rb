@@ -2,16 +2,17 @@
 part1_count = 0
 part2_count = 0
 File.open("#{__dir__}/02.txt", 'r').each_line do |line|
-  matches = /^(\d+)-(\d+) (.): (.+)$/.match(line)
-  raise StandardError.new "Could not match #{line}" unless matches
+  matches = /^(?<number1>\d+)-(?<number2>\d+) (?<letter>.): (?<password>.+)$/.match(line)
+  raise StandardError.new "Unable to parse \"#{line}\"" unless matches
 
-  _, _, _, letter, password = matches.to_a
-  number1 = matches[1].to_i
-  number2 = matches[2].to_i
+  letter, password = matches['letter'], matches['password']
+  upper_bound = matches['number2'].to_i # Part 1 only
+  pos1 = matches['number1'].to_i - 1 # Part 1 & 2
+  pos2 = upper_bound - 1 # Part 2 only
 
   letter_count = password.scan(letter).count
-  part1_count += 1 if number1 <= letter_count && letter_count <= number2
-  part2_count += 1 if (password[number1 - 1] == letter) != (password[number2 - 1] == letter)
+  part1_count += 1 if pos1 < letter_count && letter_count <= upper_bound
+  part2_count += 1 if (password[pos1] == letter) != (password[pos2] == letter)
 end
 
 puts "Part 1: #{part1_count}"
