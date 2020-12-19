@@ -16,56 +16,45 @@ instructions = File.open("#{__dir__}/12.txt", 'r').each_line.map do |line|
   [$1, $2.to_i]
 end
 
-# @TODO: Attempt to clean up any repetition between the two parts
-
-def part1(instructions)
-  ship = Matrix.columns [[0, 0]]
-  direction_index = 0
+def execute(instructions, left:, right:, forward:, direction:)
   instructions.each do |args|
     instruction, value = args
     case instruction
     when 'L'
-      direction_index -= value / 90
+      left.call(value)
     when 'R'
-      direction_index += value / 90
+      right.call(value)
     when 'F'
-      vector = $direction_vectors[direction_index % 4]
-      ship += value * vector
-    when 'E', 'S', 'N', 'W'
+      forward.call(value)
+    when 'E', 'S', 'W', 'N'
       vector = $direction_vectors[$character_map[instruction]]
-      ship += value * vector
+      direction.call(value, vector)
     else
       raise ArgumentError.new "Unknown instruction \"#{args.join ''}\""
     end
   end
-  puts "(x, y) = #{ship.inspect}"
-  puts "Part 1: #{ship[0, 0].abs + ship[1, 0].abs}"
 end
 
-def part2(instructions)
-  wp = Matrix.columns [[10, 1]] # Waypoint relative to the ship
-  ship = Matrix.columns [[0, 0]]
+direction_index = 0
+ship = Matrix.columns [[0, 0]]
+execute(
+  instructions,
+  left: lambda { |value| direction_index -= value / 90 },
+  right: lambda { |value| direction_index += value / 90 },
+  forward: lambda { |value| ship += value * $direction_vectors[direction_index % 4] },
+  direction: lambda { |value, vector| ship += value * vector }
+)
+puts "(x, y) = #{ship.inspect}"
+puts "Part 1: #{ship[0, 0].abs + ship[1, 0].abs}"
 
-  instructions.each do |args|
-    instruction, value = args
-
-    case instruction
-    when 'L', 'R'
-      direction_index = value / 90
-      direction_index *= -1 if instruction === 'L'
-      wp = $rotation_matrices[direction_index % 4] * wp
-    when 'F'
-      ship += value * wp
-    when 'E', 'S', 'N', 'W'
-      vector = $direction_vectors[$character_map[instruction]]
-      wp += value * vector
-    else
-      raise ArgumentError.new "Unknown instruction \"#{args.join ''}\""
-    end
-  end
-  puts "(x, y) = #{ship.inspect}"
-  puts "Part 2: #{ship[0, 0].abs + ship[1, 0].abs}"
-end
-
-part1(instructions)
-part2(instructions)
+ship = Matrix.columns [[0, 0]]
+wp = Matrix.columns [[10, 1]] # Waypoint relative to the ship
+execute(
+  instructions,
+  left: lambda { |value| wp = $rotation_matrices[(-value / 90) % 4] * wp },
+  right: lambda { |value| wp = $rotation_matrices[(value / 90) % 4] * wp },
+  forward: lambda { |value| ship += value * wp },
+  direction: lambda { |value, vector| wp += value * vector }
+)
+puts "(x, y) = #{ship.inspect}"
+puts "Part 2: #{ship[0, 0].abs + ship[1, 0].abs}"
