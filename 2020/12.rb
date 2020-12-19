@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
+require 'matrix'
 
-$direction_vectors = [[1, 0], [0, -1], [-1, 0], [0, 1]]
+$direction_vectors = [[1, 0], [0, -1], [-1, 0], [0, 1]].map! { |array| Matrix.columns [array] }
 $character_map = {'E' => 0, 'S' => 1, 'W' => 2, 'N' => 3}
 
 $rotation_matrices = [
@@ -8,19 +9,17 @@ $rotation_matrices = [
   [[ 0,  1], [-1,  0]],
   [[-1,  0], [ 0, -1]],
   [[ 0, -1], [ 1,  0]]
-]
+].map! { |array| Matrix.rows array }
 
 instructions = File.open("#{__dir__}/12.txt", 'r').each_line.map do |line|
   raise ArgumentError.new "Unable to parse \"#{line}\"" unless /^(.)(\d+)$/ =~ line
   [$1, $2.to_i]
 end
 
-# @TODO:
-# * Attempt to clean up any repetition between the two parts
-# * Perform matrix calculations more neatly
+# @TODO: Attempt to clean up any repetition between the two parts
 
 def part1(instructions)
-  ship = [0, 0]
+  ship = Matrix.columns [[0, 0]]
   direction_index = 0
   instructions.each do |args|
     instruction, value = args
@@ -31,19 +30,21 @@ def part1(instructions)
       direction_index += value / 90
     when 'F'
       vector = $direction_vectors[direction_index % 4]
-      ship.map!.with_index { |pos, axis| pos + value * vector[axis] }
-    else
+      ship += value * vector
+    when 'E', 'S', 'N', 'W'
       vector = $direction_vectors[$character_map[instruction]]
-      ship.map!.with_index { |pos, axis| pos + value * vector[axis] }
+      ship += value * vector
+    else
+      raise ArgumentError.new "Unknown instruction \"#{args.join ''}\""
     end
   end
-  puts "[x, y] = #{ship.inspect}"
-  puts "Part 1: #{ship[0].abs + ship[1].abs}"
+  puts "(x, y) = #{ship.inspect}"
+  puts "Part 1: #{ship[0, 0].abs + ship[1, 0].abs}"
 end
 
 def part2(instructions)
-  wp = [10, 1] # Waypoint relative to the ship
-  ship = [0, 0]
+  wp = Matrix.columns [[10, 1]] # Waypoint relative to the ship
+  ship = Matrix.columns [[0, 0]]
 
   instructions.each do |args|
     instruction, value = args
@@ -52,23 +53,18 @@ def part2(instructions)
     when 'L', 'R'
       direction_index = value / 90
       direction_index *= -1 if instruction === 'L'
-      matrix = $rotation_matrices[direction_index % 4]
-
-      wp = [
-        wp[0] * matrix[0][0] + wp[1] * matrix[0][1],
-        wp[0] * matrix[1][0] + wp[1] * matrix[1][1]
-      ]
+      wp = $rotation_matrices[direction_index % 4] * wp
     when 'F'
-      ship[0] += value * wp[0]
-      ship[1] += value * wp[1]
-    else
+      ship += value * wp
+    when 'E', 'S', 'N', 'W'
       vector = $direction_vectors[$character_map[instruction]]
-      wp[0] += value * vector[0]
-      wp[1] += value * vector[1]
+      wp += value * vector
+    else
+      raise ArgumentError.new "Unknown instruction \"#{args.join ''}\""
     end
   end
   puts "(x, y) = #{ship.inspect}"
-  puts "Part 2: #{ship[0].abs + ship[1].abs}"
+  puts "Part 2: #{ship[0, 0].abs + ship[1, 0].abs}"
 end
 
 part1(instructions)
