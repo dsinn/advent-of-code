@@ -138,7 +138,6 @@ puts "Part 1: #{corner_tiles.keys.inject(:*)}\n\n"
 
 # @TODO omg Part 2 is such a mess 😵
 
-used_tile_ids = {}
 tile_grid = []
 grid_length = (tiles.length ** 0.5).round # @TODO Don't assume it's always a square
 for i in 0 ... grid_length
@@ -169,31 +168,14 @@ for i in 0 ... grid_length
       left_edge = left_tile.edges[Tile::RIGHT]
       left_edge_index = normalize_edge left_edge
 
-      if i > 0
-        above_tile = tile_grid.last[j]
-        above_edge = above_tile.edges[Tile::BOTTOM] # Bottom edge of the above tile
-        above_edge_index = normalize_edge above_edge
-
-        # Find the one tile that can fit between the left and above tiles and hasn't been used
-        tile_to_add = tiles[
-          (tile_adjacencies[left_tile.id] & tile_adjacencies[above_tile.id]).reject { |tile_id|
-            used_tile_ids.has_key? tile_id
-          }.first
-        ]
-        tile_to_add.rotate_cw until left_edge_index === normalize_edge(tile_to_add.edges[Tile::LEFT])
-      else
-        tile_to_add, pos = edge_indices[left_edge_index].reject { |edge_data| left_tile === edge_data.first}.first
-        for rotation in pos ... 3
-          tile_to_add.rotate_cw
-        end
+      tile_to_add, pos = edge_indices[left_edge_index].reject { |edge_data| left_tile === edge_data.first}.first
+      for rotation in pos ... 3
+        tile_to_add.rotate_cw
       end
 
       tile_to_add.flip_vertical if left_edge === tile_to_add.edges[Tile::LEFT]
-      tile_to_add.flip_horizontal if above_edge === tile_to_add.edges[Tile::TOP]
       tile_row << tile_to_add
     end
-
-    used_tile_ids[tile_to_add.id] = true
   end
   tile_grid << tile_row
 end
