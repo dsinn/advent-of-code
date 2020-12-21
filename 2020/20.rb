@@ -78,6 +78,7 @@ end
 def get_monster_regex_and_replacement_offsets(monster, full_image_length)
   lines = monster.split("\n")
   monster_length = lines.map(&:length).max
+  # This assumes the image is square. We would need two different regexes with different join lengths otherwise.
   regex_join_length = full_image_length - monster_length + 1
 
   {
@@ -136,48 +137,49 @@ corner_tiles = tile_adjacencies.select { |id, adjacent_ids| adjacent_ids.count =
 puts "Corner tiles: #{corner_tiles.keys.inspect}"
 puts "Part 1: #{corner_tiles.keys.inject(:*)}\n\n"
 
-# @TODO omg Part 2 is such a mess 😵
-
 tile_grid = []
-grid_length = (tiles.length ** 0.5).round # @TODO Don't assume it's always a square
-for i in 0 ... grid_length
-  tile_row = []
-  for j in 0 ... grid_length
-    if i === 0 && j === 0
-      # Start with a random corner tile to place at the top-left and then build upon it;
-      # it's important to orient it so that adjacent tiles go to the right and bottom.
-      tile_to_add = tiles[corner_tiles.keys.first]
-      tile_to_add.rotate_cw while edge_indices[normalize_edge(tile_to_add.edges[Tile::RIGHT])].count === 1 ||
-          edge_indices[normalize_edge(tile_to_add.edges[Tile::BOTTOM])].count === 1
-      tile_row << tile_to_add
-    elsif j === 0 # Leftmost tile of the row
-      # Match with the tile from the above row
-      above_tile = tile_grid.last.first
-      above_edge = above_tile.edges[Tile::BOTTOM] # Bottom edge of the above tile
-      above_edge_index = normalize_edge above_edge
-      tile_to_add, pos = edge_indices[above_edge_index].select { |edge_data| edge_data.first != above_tile }.first
-      for rotation in 1 .. pos # 0 is the top edge
-        tile_to_add.rotate_ccw
-      end
-
-      tile_to_add.flip_horizontal if above_edge === tile_to_add.edges[Tile::TOP]
-      tile_row << tile_to_add
-    else
-      # Match with the tile on the left
-      left_tile = tile_row.last
-      left_edge = left_tile.edges[Tile::RIGHT]
-      left_edge_index = normalize_edge left_edge
-
-      tile_to_add, pos = edge_indices[left_edge_index].reject { |edge_data| left_tile === edge_data.first}.first
-      for rotation in pos ... 3
-        tile_to_add.rotate_cw
-      end
-
-      tile_to_add.flip_vertical if left_edge === tile_to_add.edges[Tile::LEFT]
-      tile_row << tile_to_add
+# Start with a random corner tile to place at the top-left and then build upon it;
+# it's important to orient it so that adjacent tiles go to the right and bottom.
+first_tile = tiles[corner_tiles.keys.first]
+first_tile.rotate_cw while edge_indices[normalize_edge(first_tile.edges[Tile::RIGHT])].count === 1 ||
+    edge_indices[normalize_edge(first_tile.edges[Tile::BOTTOM])].count === 1
+tile_row = [first_tile]
+j = 1
+for _tile in 1 ... tiles.count
+  # @TODO Cut down the number size of each case by storing only the adjacent tile and adjacent edge/position
+  if j === 0 # Leftmost tile of the row
+    # Match with the tile from the above row
+    above_tile = tile_grid.last.first
+    above_edge = above_tile.edges[Tile::BOTTOM] # Bottom edge of the above tile
+    above_edge_index = normalize_edge above_edge
+    tile_to_add, pos = edge_indices[above_edge_index].select { |edge_data| edge_data.first != above_tile }.first
+    for rotation in 1 .. pos # 0 is the top edge
+      tile_to_add.rotate_ccw
     end
+
+    tile_to_add.flip_horizontal if above_edge === tile_to_add.edges[Tile::TOP]
+  else
+    # Match with the tile on the left
+    left_tile = tile_row.last
+    left_edge = left_tile.edges[Tile::RIGHT]
+    left_edge_index = normalize_edge left_edge
+
+    tile_to_add, pos = edge_indices[left_edge_index].reject { |edge_data| left_tile === edge_data.first}.first
+    for rotation in pos ... 3
+      tile_to_add.rotate_cw
+    end
+
+    tile_to_add.flip_vertical if left_edge === tile_to_add.edges[Tile::LEFT]
   end
-  tile_grid << tile_row
+  tile_row << tile_to_add
+  j += 1
+
+  if edge_indices[normalize_edge tile_to_add.edges[Tile::RIGHT]].count === 1
+    # End of the row when there are no more tiles to match on the right
+    j = 0
+    tile_grid << tile_row
+    tile_row = []
+  end
 end
 
 tile_grid.each do |row|
