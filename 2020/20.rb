@@ -75,6 +75,7 @@ class Tile
   end
 end
 
+# @TODO Abstract the normalizing logic into a helper/class or something
 def normalize_edge(edge)
   [edge, edge.reverse].min
 end
@@ -84,7 +85,7 @@ File.read("#{__dir__}/20.txt").split(/\n{2,}/).map do |tile_input|
   id_line, image = tile_input.split("\n", 2)
   raise ArgumentError.new "Unable to parse \"#{id_line}\"" unless /^Tile (\d+):$/ =~ id_line
   id = $1.to_i
-  tiles[id] = Tile.new(id, image)
+  tiles[id] = Tile.new id, image
 end
 
 edge_indices = {} # normalized edge -> (tile, edge position within tile)
@@ -100,13 +101,12 @@ tile_adjacencies = {} # tile ID -> adjacent tile IDs
 edge_indices.each do |_k, v|
   if v.size === 2
     id1, id2 = v.first.first.id, v.last.first.id
-
     tile_adjacencies[id1] = [] unless tile_adjacencies.has_key? id1
     tile_adjacencies[id2] = [] unless tile_adjacencies.has_key? id2
     tile_adjacencies[id1] << id2
     tile_adjacencies[id2] << id1
   elsif v.size > 2
-    raise StandardError.new 'Your approach is flawed or there is a bug. :('
+    raise StandardError.new 'The edges aren\'t unique, so this approach is flawed. :('
   end
 end
 
@@ -126,14 +126,15 @@ for i in 0 ... grid_length
       # Start with a random corner tile to place at the top-left and then build upon it;
       # it's important to orient it so that adjacent tiles go to the right and bottom.
       tile_to_add = tiles[corner_tiles.keys.first]
-      tile_to_add.rotate_cw while edge_indices[normalize_edge(tile_to_add.edges[Tile::RIGHT])].count === 1 || edge_indices[normalize_edge(tile_to_add.edges[Tile::BOTTOM])].count === 1
+      tile_to_add.rotate_cw while edge_indices[normalize_edge(tile_to_add.edges[Tile::RIGHT])].count === 1 ||
+          edge_indices[normalize_edge(tile_to_add.edges[Tile::BOTTOM])].count === 1
       tile_row << tile_to_add
     elsif j === 0 # Leftmost tile of the row
       # Match with the tile from the above row
       above_tile = tile_grid.last.first
       above_edge = above_tile.edges[Tile::BOTTOM] # Bottom edge of the above tile
       above_edge_index = normalize_edge above_edge
-      tile_to_add, pos = edge_indices[above_edge_index].select { |edge_data| edge_data.first.id != above_tile.id }.first
+      tile_to_add, pos = edge_indices[above_edge_index].select { |edge_data| edge_data.first != above_tile }.first
       for rotation in 1 .. pos # 0 is the top edge
         tile_to_add.rotate_ccw
       end
@@ -150,16 +151,16 @@ for i in 0 ... grid_length
         above_tile = tile_grid.last[j]
         above_edge = above_tile.edges[Tile::BOTTOM] # Bottom edge of the above tile
         above_edge_index = normalize_edge above_edge
-      else
-        above_edge = nil
-      end
 
-      if above_edge
         # Find the one tile that can fit between the left and above tiles and hasn't been used
-        tile_to_add = tiles[(tile_adjacencies[left_tile.id] & tile_adjacencies[above_tile.id]).reject { |tile_id| used_tile_ids.has_key? tile_id }.first]
+        tile_to_add = tiles[
+          (tile_adjacencies[left_tile.id] & tile_adjacencies[above_tile.id]).reject { |tile_id|
+            used_tile_ids.has_key? tile_id
+          }.first
+        ]
         tile_to_add.rotate_cw until left_edge_index === normalize_edge(tile_to_add.edges[Tile::LEFT])
       else
-        tile_to_add, pos = edge_indices[left_edge_index].reject { |edge_data| left_tile.id === edge_data.first.id}.first
+        tile_to_add, pos = edge_indices[left_edge_index].reject { |edge_data| left_tile === edge_data.first}.first
         for rotation in pos ... 3
           tile_to_add.rotate_cw
         end
@@ -167,7 +168,6 @@ for i in 0 ... grid_length
 
       tile_to_add.flip_vertical if left_edge === tile_to_add.edges[Tile::LEFT]
       tile_to_add.flip_horizontal if above_edge === tile_to_add.edges[Tile::TOP]
-
       tile_row << tile_to_add
     end
 
@@ -229,7 +229,7 @@ for flip in 1 .. 2
       s[offset + 16] = 'O'
     end
     match_count = s.scan('#').count
-    puts "Found #{monster_offsets.count} sea monster#{monster_offsets.count === 1 ? '' : 's'} for #{match_count} rough waters."
+    puts "Found #{monster_offsets.count} sea monster(s) for #{match_count} rough waters."
     if match_count < best_match_count
       puts "This beats the previous best of #{best_match_count} rough waters!" if best_match_count != Float::INFINITY
       best_match_count = match_count
