@@ -75,6 +75,28 @@ class Tile
   end
 end
 
+def get_monster_regex_and_replacement_offsets(monster, full_image_length)
+  lines = monster.split("\n")
+  monster_length = lines.map(&:length).max
+  regex_join_length = full_image_length - monster_length + 1
+
+  {
+    regex: Regexp.new(
+      '(?=' + # Use a look-ahead because they don't say the monsters can overlap, and it's not in the test case
+          lines.map { |line|
+            line.gsub(/ +/) { |m| "\\S{#{m.length}}" } + "\\S{#{monster_length - line.length}}"
+          }.join(".{#{regex_join_length}}")
+          .gsub('\\S{0}', '') # Just clean up the regex for neatness' sake
+          .gsub('\\S{1}', '\\S') +
+          ')',
+      Regexp::MULTILINE
+    ),
+    offsets: lines.map.with_index { |line, i|
+      line.enum_for(:scan, '#').map { Regexp.last_match.begin(0) + i * (full_image_length + 1) }
+    }.inject(:+)
+  }
+end
+
 # @TODO Abstract the normalizing logic into a helper/class or something
 def normalize_edge(edge)
   [edge, edge.reverse].min
@@ -190,13 +212,19 @@ full_image = tile_grid.map { |tile_row|
   full_image_row
 }.inject(:+)
 
-# @TODO For fun: take a monster string and dynamically generate its regex and replacements 😏
-line_break_length = full_image.first.length - 19 # Line length - monster length + 1 (for the \n)
-monster_regex = Regexp.new( # tbh "monster regex" has a double meaning and I like it
-  # Use a look-ahead because they don't tell you that the monsters can overlap, and it's not in the test case
-  "(?=\\S{18}#\\S.{#{line_break_length}}#(?:\\S{4}##){3}#.{#{line_break_length}}\\S(?:#\\S\\S){6}\\S)",
-  Regexp::MULTILINE
-)
+monster = <<-'MONSTER'
+                  #
+#    ##    ##    ###
+ #  #  #  #  #  #
+MONSTER
+puts 'Sea monster:'
+puts "#{monster}\n"
+
+full_image_length = full_image.first.length
+# tbh "monster regex" has a double meaning and I like it
+monster_regex, monster_segment_offsets = get_monster_regex_and_replacement_offsets(monster, full_image_length).values
+puts "The O's will appear at the offets: #{monster_segment_offsets.inspect}"
+puts "Monster regex: #{monster_regex}\n\n"
 
 best_match_count = Float::INFINITY
 best_match_string = ''
@@ -206,30 +234,14 @@ best_match_string = ''
 for flip in 1 .. 2
   for rotation in 1 .. 4
     s = full_image.map { |row| row.join('') }.join("\n")
-    monster_offsets = s.enum_for(:scan, monster_regex).map { Regexp.last_match.begin(0) }
-    monster_offsets.each do |monster_offset|
-      # This is ugly af
-      offset = monster_offset
-      s[offset + 18] = 'O'
-      offset += full_image.first.length + 1
-      s[offset] = 'O'
-      s[offset + 5] = 'O'
-      s[offset + 6] = 'O'
-      s[offset + 11] = 'O'
-      s[offset + 12] = 'O'
-      s[offset + 17] = 'O'
-      s[offset + 18] = 'O'
-      s[offset + 19] = 'O'
-      offset += full_image.first.length + 1
-      s[offset + 1] = 'O'
-      s[offset + 4] = 'O'
-      s[offset + 7] = 'O'
-      s[offset + 10] = 'O'
-      s[offset + 13] = 'O'
-      s[offset + 16] = 'O'
+    monster_starts = s.enum_for(:scan, monster_regex).map { Regexp.last_match.begin(0) }
+    monster_starts.each do |monster_start|
+      monster_segment_offsets.each do |offset|
+        s[monster_start + offset] = 'O'
+      end
     end
     match_count = s.scan('#').count
-    puts "Found #{monster_offsets.count} sea monster(s) for #{match_count} rough waters."
+    puts "Found #{monster_starts.count} sea monster(s) for #{match_count} rough waters."
     if match_count < best_match_count
       puts "This beats the previous best of #{best_match_count} rough waters!" if best_match_count != Float::INFINITY
       best_match_count = match_count
