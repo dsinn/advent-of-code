@@ -40,33 +40,22 @@ class Tile
     @image
   end
 
-  def flip_horizontal
-    @edges = [
-      @edges[TOP],
-      @edges[LEFT],
-      @edges[BOTTOM],
-      @edges[RIGHT],
-    ].map { |edge| edge.reverse }
-    @image.map! { |row| row.reverse }
-  end
+  # Flip the image such that the edge at `pos` stays in the same position but is reversed
+  def flip_edge(pos)
+    flip_pos1 = (pos + 1) % 4
+    flip_pos2 = (pos + 3) % 4
+    @edges[flip_pos1], @edges[flip_pos2] = @edges[flip_pos2], @edges[flip_pos1]
+    @edges.map! { |edge| edge.reverse }
 
-  def flip_vertical
-    @edges = [
-      @edges[BOTTOM],
-      @edges[RIGHT],
-      @edges[TOP],
-      @edges[LEFT]
-    ].map { |edge| edge.reverse }
-    @image.reverse!
+    if pos & 1 === 0
+      @image.map! { |row| row.reverse }
+    else
+      @image.reverse!
+    end
   end
 
   def length
     @length
-  end
-
-  def rotate_ccw
-    @edges << @edges.shift
-    @image = @image.transpose.reverse
   end
 
   def rotate_cw
@@ -145,32 +134,24 @@ first_tile.rotate_cw while edge_indices[normalize_edge(first_tile.edges[Tile::RI
     edge_indices[normalize_edge(first_tile.edges[Tile::BOTTOM])].count === 1
 tile_row = [first_tile]
 j = 1
-for _tile in 1 ... tiles.count
-  # @TODO Cut down the number size of each case by storing only the adjacent tile and adjacent edge/position
-  if j === 0 # Leftmost tile of the row
-    # Match with the tile from the above row
-    above_tile = tile_grid.last.first
-    above_edge = above_tile.edges[Tile::BOTTOM] # Bottom edge of the above tile
-    above_edge_index = normalize_edge above_edge
-    tile_to_add, pos = edge_indices[above_edge_index].select { |edge_data| edge_data.first != above_tile }.first
-    for rotation in 1 .. pos # 0 is the top edge
-      tile_to_add.rotate_ccw
-    end
 
-    tile_to_add.flip_horizontal if above_edge === tile_to_add.edges[Tile::TOP]
+for _tile_add_count in 1 ... tiles.count
+  adjacent_tile, adjacent_tile_edge_pos = if j === 0
+    # We are on the leftmost tile of the row, so match with the one above
+    [tile_grid.last.first, Tile::BOTTOM]
   else
-    # Match with the tile on the left
-    left_tile = tile_row.last
-    left_edge = left_tile.edges[Tile::RIGHT]
-    left_edge_index = normalize_edge left_edge
-
-    tile_to_add, pos = edge_indices[left_edge_index].reject { |edge_data| left_tile === edge_data.first}.first
-    for rotation in pos ... 3
-      tile_to_add.rotate_cw
-    end
-
-    tile_to_add.flip_vertical if left_edge === tile_to_add.edges[Tile::LEFT]
+    # Otherwise, match with the one on the left
+    [tile_row.last, Tile::RIGHT]
   end
+
+  adjacent_edge = adjacent_tile.edges[adjacent_tile_edge_pos]
+  edge_index = normalize_edge adjacent_edge
+  tile_to_add, tile_to_add_pos = edge_indices[edge_index].select { |edge_data| edge_data.first != adjacent_tile }.first
+  tile_to_add_target_edge_pos = (adjacent_tile_edge_pos + 2) % 4
+  rotation_count = (tile_to_add_target_edge_pos - tile_to_add_pos) % 4
+  (0...rotation_count).each { |_| tile_to_add.rotate_cw }
+  tile_to_add.flip_edge adjacent_tile_edge_pos if adjacent_edge === tile_to_add.edges[tile_to_add_target_edge_pos]
+
   tile_row << tile_to_add
   j += 1
 
