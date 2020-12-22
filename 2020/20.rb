@@ -58,6 +58,16 @@ class Tile
     @length
   end
 
+  def rotate_180
+    (0..1).each { |_| @edges << @edges.shift }
+    @image.reverse!.map! { |row| row.reverse }
+  end
+
+  def rotate_ccw
+    @edges << @edges.shift
+    @image = @image.transpose.reverse
+  end
+
   def rotate_cw
     @edges.unshift(@edges.pop)
     @image = @image.reverse.transpose
@@ -127,11 +137,14 @@ puts "Corner tiles: #{corner_tiles.keys.inspect}"
 puts "Part 1: #{corner_tiles.keys.inject(:*)}\n\n"
 
 tile_grid = []
-# Start with a random corner tile to place at the top-left and then build upon it;
-# it's important to orient it so that adjacent tiles go to the right and bottom.
+# Start with a random corner tile to place at the top-left and then build upon it
 first_tile = tiles[corner_tiles.keys.first]
-first_tile.rotate_cw while edge_indices[normalize_edge(first_tile.edges[Tile::RIGHT])].count === 1 ||
-    edge_indices[normalize_edge(first_tile.edges[Tile::BOTTOM])].count === 1
+# Orient it so that adjacent tiles go to the right and bottom
+last_orphan_edge_pos = first_tile.edges.each_index.select { |pos|
+  edge_indices[normalize_edge first_tile.edges[pos]].count === 1
+}.max
+clockwise_rotation_count = (last_orphan_edge_pos - Tile::BOTTOM) % 4
+(0...clockwise_rotation_count).each { |_| first_tile.rotate_cw }
 tile_row = [first_tile]
 j = 1
 
@@ -148,8 +161,20 @@ for _tile_add_count in 1 ... tiles.count
   edge_index = normalize_edge adjacent_edge
   tile_to_add, tile_to_add_pos = edge_indices[edge_index].select { |edge_data| edge_data.first != adjacent_tile }.first
   tile_to_add_target_edge_pos = (adjacent_tile_edge_pos + 2) % 4
-  rotation_count = (tile_to_add_target_edge_pos - tile_to_add_pos) % 4
-  (0...rotation_count).each { |_| tile_to_add.rotate_cw }
+
+  clockwise_rotation_count = (tile_to_add_target_edge_pos - tile_to_add_pos) % 4
+  tile_to_add.send(
+    case clockwise_rotation_count
+    when 1
+      :rotate_cw
+    when 2
+      :rotate_180
+    when 3
+      :rotate_ccw
+    else
+      :class # Do nothing
+    end
+  )
   tile_to_add.flip_edge adjacent_tile_edge_pos if adjacent_edge === tile_to_add.edges[tile_to_add_target_edge_pos]
 
   tile_row << tile_to_add
