@@ -2,8 +2,12 @@
 import re
 
 class Board:
+    STATE_IN_PROGRESS = False
+    STATE_WINNER = True
+
     def __init__(self, numbers):
         self.numbers = numbers
+        self.state = self.STATE_IN_PROGRESS
         self.width = len(numbers)
 
         # Count how many unmarked numbers there are on each row and column
@@ -22,6 +26,9 @@ class Board:
                 self.unmarked_numbers[value] = True
 
     def mark_number(self, number):
+        if self.state == self.STATE_WINNER:
+            raise RuntimeError('Cannot mark numbers on a board that already won.')
+
         if number not in self.position_map:
             return
         self.unmarked_numbers.pop(number)
@@ -29,11 +36,13 @@ class Board:
 
         self.row_unmarked[row] -= 1
         if self.row_unmarked[row] == 0:
-            return True
+            self.state = self.STATE_WINNER
+            return
 
         self.col_unmarked[col] -= 1
         if self.col_unmarked[col] == 0:
-            return True
+            self.state = self.STATE_WINNER
+            return
 
 f = open('04.txt', 'r')
 raw_boards = f.read().rstrip().split("\n\n")
@@ -66,7 +75,8 @@ winning_products = []
 for called_number in called_numbers:
     i = 0
     while i < len(boards):
-        if boards[i].mark_number(called_number):
+        boards[i].mark_number(called_number)
+        if boards[i].state == boards[i].STATE_WINNER:
             winning_products.append(called_number * sum(boards[i].unmarked_numbers.keys()))
             boards.pop(i)
             i -= 1
