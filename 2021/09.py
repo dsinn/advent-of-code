@@ -8,26 +8,25 @@ heights = list(
     )
 )
 
-def get_basin_size(heights, row, col, basin_points = None):
+def get_basin_size(heights, row, col, previous_height = -1, basin_points = None):
     if not basin_points:
         basin_points = {}
-
     if (row, col) in basin_points:
         return
-    height = heights[row][col]
-    if height == 9:
+
+    try:
+        height = heights[row][col]
+    except IndexError:
+        return
+    if height == 9 or height < previous_height:
         return
 
     basin_points[(row, col)] = True
 
-    if row > 0 and height < heights[row - 1][col]:
-        get_basin_size(heights, row - 1, col, basin_points)
-    if row + 1 < len(heights) and height < heights[row + 1][col]:
-        get_basin_size(heights, row + 1, col, basin_points)
-    if col > 0 and height < heights[row][col - 1]:
-        get_basin_size(heights, row, col - 1, basin_points)
-    if col + 1 < len(heights[row]) and height < heights[row][col + 1]:
-        get_basin_size(heights, row, col + 1, basin_points)
+    get_basin_size(heights, row - 1, col, height, basin_points)
+    get_basin_size(heights, row + 1, col, height, basin_points)
+    get_basin_size(heights, row, col - 1, height, basin_points)
+    get_basin_size(heights, row, col + 1, height, basin_points)
 
     return len(basin_points)
 
