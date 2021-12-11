@@ -11,7 +11,7 @@ heights = list(
 def get_basin_size(heights, row, col, previous_height = -1, basin_points = None):
     if not basin_points:
         basin_points = {}
-    if (row, col) in basin_points:
+    if (row, col) in basin_points or row < 0 or col < 0:
         return
 
     try:
