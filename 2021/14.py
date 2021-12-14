@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 from collections import Counter, defaultdict
+from os.path import dirname
 import re
-f = open('14.txt', 'r')
+
+f = open(f'{dirname(__file__)}/14.txt', 'r')
 
 template = f.readline().rstrip()
 

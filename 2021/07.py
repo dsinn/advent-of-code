@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import functools
-f = open('07.txt', 'r')
+from os.path import dirname
+
+f = open(f'{dirname(__file__)}/07.txt', 'r')
 
 def calculate_cost(positions, destination, fuel_by_distance_lambda):
     total_cost = 0

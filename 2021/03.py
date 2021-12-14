@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-f = open('03.txt', 'r')
+from os.path import dirname
+
+f = open(f'{dirname(__file__)}/03.txt', 'r')
 line_count = 0
 line = f.readline() # Assume the length of the first line equals the length of all the others
 f.seek(0, 0)

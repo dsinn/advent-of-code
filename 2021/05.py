@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 from collections import defaultdict
+from os.path import dirname
 import re
 
-f = open('05.txt', 'r')
+f = open(f'{dirname(__file__)}/05.txt', 'r')
 
 part1_frequency_map = defaultdict(lambda: 0)
 part1_overlap_points = 0

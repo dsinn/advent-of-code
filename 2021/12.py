@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 from collections import defaultdict
+from os.path import dirname
 
-f = open('12.txt', 'r')
+f = open(f'{dirname(__file__)}/12.txt', 'r')
 graph = defaultdict(lambda: [])
 for line in f.readlines():
     left, right = line.rstrip().split('-')

@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
+from os.path import dirname
+
 WINDOW_SIZE = 3
 
 singular_increase_count = 0
 sliding_window_increase_count = 0
 
-f = open('01.txt', 'r')
+f = open(f'{dirname(__file__)}/01.txt', 'r')
 
 # Initialize the sliding window so that the main loop is simpler
 previous_numbers = list(map(lambda x: int(x.rstrip()), [f.readline() for x in range(WINDOW_SIZE)]))

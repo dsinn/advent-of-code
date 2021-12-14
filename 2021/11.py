@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-f = open('11.txt', 'r')
+from os.path import dirname
+
+f = open(f'{dirname(__file__)}/11.txt', 'r')
 
 energy_levels = list(
     map(

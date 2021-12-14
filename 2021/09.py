@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-f = open('09.txt', 'r')
+from os.path import dirname
+
+f = open(f'{dirname(__file__)}/09.txt', 'r')
 
 heights = list(
     map(

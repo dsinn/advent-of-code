@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 from collections import Counter, defaultdict
 from functools import reduce
-f = open('08.txt', 'r')
+from os.path import dirname
+
+f = open(f'{dirname(__file__)}/08.txt', 'r')
 
 ORIGINAL_PATTERNS = {
     'abcefg': '0',

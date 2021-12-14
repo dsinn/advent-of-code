@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
+from os.path import dirname
 import re
-f = open('13.txt', 'r')
+
+f = open(f'{dirname(__file__)}/13.txt', 'r')
 
 dot_positions = []
 max_x = max_y = 0

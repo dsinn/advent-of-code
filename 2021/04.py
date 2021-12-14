@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from os.path import dirname
 import re
 
 class Board:
@@ -44,7 +45,7 @@ class Board:
             self.state = self.STATE_WINNER
             return
 
-f = open('04.txt', 'r')
+f = open(f'{dirname(__file__)}/04.txt', 'r')
 raw_boards = f.read().rstrip().split("\n\n")
 called_numbers = list(map(lambda number_string: int(number_string), raw_boards.pop(0).split(',')))
 boards = list(

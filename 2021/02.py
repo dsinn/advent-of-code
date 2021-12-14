@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-f = open('02.txt', 'r')
+from os.path import dirname
+
+f = open(f'{dirname(__file__)}/02.txt', 'r')
 
 positions = [{'horizontal': 0, 'depth': 0} for _ in range(2)]
 aim = 0

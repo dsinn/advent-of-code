@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-f = open('06.txt', 'r')
+from os.path import dirname
+
+f = open(f'{dirname(__file__)}/06.txt', 'r')
 
 REPRODUCTIVE_PERIOD = 7
 fish_by_modulo = [0 for _ in range(REPRODUCTIVE_PERIOD)]
