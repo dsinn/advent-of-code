@@ -2,42 +2,60 @@
 
 circle = File.read("#{__dir__}/23.txt").rstrip.split('').map(&:to_i)
 
-current_pos = 0
-for move in 1 .. 100
-  puts "-- move #{move} --"
-  puts "cups: #{circle.inspect}"
-  puts "current cup: #{circle[current_pos]}"
-  picked_up = circle.slice!(current_pos + 1, 3)
-  starting_cups_to_take = 3 - picked_up.count
-  if starting_cups_to_take > 0
-    current_pos -= starting_cups_to_take
-    picked_up += circle.slice!(0, starting_cups_to_take)
-  end
-  puts "pick up: #{picked_up.inspect}"
+part1_linked_cups = circle.map.with_index { |cup, i| [circle[i - 1], cup] }.to_h
+part2_linked_cups = Marshal.load(Marshal.dump part1_linked_cups)
 
-  destination_pos = nil
-  current_cup_label = circle[current_pos]
-  if circle.min === current_cup_label
-    destination_pos = circle.find_index circle.max
-  else
-    (current_cup_label - 1).downto(1) do |label|
-      destination_pos = circle.find_index(label)
-      break unless destination_pos.nil?
+def execute_crab_maneuvres(linked_cups, current, moves, print: false)
+  for move in 1 .. moves do
+    picked_up = []
+    pickup_pointer = current
+    3.times do
+      pickup_pointer = linked_cups[pickup_pointer]
+      picked_up << pickup_pointer
     end
+    after_pickup = linked_cups[pickup_pointer]
+
+    destination = current
+    loop do
+      destination = destination == 1 ? linked_cups.length : destination - 1
+      break unless picked_up.include? destination
+    end
+    after_destination = linked_cups[destination]
+
+    if print
+      puts "-- move #{move} --"
+      print "cups: (#{current})"
+      print_pointer = current
+      (linked_cups.length - 1).times do
+        print_pointer = linked_cups[print_pointer]
+        print " #{print_pointer}"
+      end
+      puts "\npick up: #{picked_up.keys.join(', ')}"
+      puts "destination: #{destination}\n\n"
+    end
+
+    linked_cups[current] = after_pickup
+    linked_cups[destination] = picked_up.first
+    linked_cups[pickup_pointer] = after_destination
+    current = after_pickup
   end
-
-  puts "destination: #{circle[destination_pos]}\n\n"
-  insertion_pos = (destination_pos + 1) % circle.length
-  current_pos += 3 if insertion_pos <= current_pos
-  circle.insert insertion_pos, *picked_up
-
-  current_pos = (current_pos + 1) % circle.length
 end
 
-puts '-- final -- '
-puts "cups: #{circle.inspect}\n\n"
+execute_crab_maneuvres part1_linked_cups, circle.first, 100
+print 'Part 1: '
+print_pointer = 1
+(part1_linked_cups.length - 1).times do
+  print_pointer = part1_linked_cups[print_pointer]
+  print print_pointer
+end
+puts
 
-label1_index = circle.find_index 1
-puts "Part 1: #{circle[label1_index + 1 .. -1].join ''}#{circle[0 ... label1_index].join ''}"
+for i in circle.length + 1 .. 1000000 do
+  part2_linked_cups[i] = i + 1
+end
+part2_linked_cups[circle.last] = circle.length + 1
+part2_linked_cups[1000000] = circle.first
 
-# @TODO Part 2
+execute_crab_maneuvres part2_linked_cups, circle.first, 10000000
+cup_after_1 = part2_linked_cups[1]
+puts "Part 2: #{cup_after_1 * part2_linked_cups[cup_after_1]}"
