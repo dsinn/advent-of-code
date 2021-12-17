@@ -21,7 +21,7 @@ successful_initial_velocity_count = 0
 x0_min = math.ceil((-1 + math.sqrt(1 + 8 * x_target_min)) / 2)
 print(x0_min)
 
-y0 = 0
+y0 = y_target_min # If we already pass the y target after one second, it's impossible to hit
 while True:
     # We have y = ty_0 - t(t - 1)/2
     # which ends up being the quadratic formula t^2 + t(-1 - 2y_0) + 2y = 0
@@ -66,9 +66,6 @@ while True:
             successful_initial_velocity_count += 1
             print(f'Success count (part 2): {successful_initial_velocity_count}; v_init = {(x0, y0)}')
 
-    if y0 > 0:
-        y0 *= -1
-    else:
-        y0 = -y0 + 1
+    y0 += 1
 
 # @TODO Figure out an ending condition
