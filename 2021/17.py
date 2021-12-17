@@ -30,20 +30,18 @@ for y0 in range(y_target_min, -y_target_min):
     quad_b = -1 - 2 * y0
     # Because we assume the y target zone coordinates are negative,
     # the projectile reaches y_target_max before y_target_min and the order in the range is reversed.
-    target_y_intervals = []
-    # y may cross the y target zone on both the left and right halves of the parabola, so check both.
-    for side_of_parabola in [-1, 1]:
-        lower_bound = math.ceil((-quad_b + side_of_parabola * math.sqrt(quad_b ** 2 - 8 * y_target_max)) / 2)
-        upper_bound = math.floor((-quad_b + side_of_parabola * math.sqrt(quad_b ** 2 - 8 * y_target_min)) / 2)
-        if lower_bound > 0 and upper_bound >= lower_bound: # ignore t < 0 and misses
-            target_y_intervals.append((lower_bound, upper_bound))
-    if not target_y_intervals:
+    target_y_interval = None
+    # Only check the right half of the parabola because we don't care about t < 0
+    lower_bound = math.ceil((-quad_b + math.sqrt(quad_b ** 2 - 8 * y_target_max)) / 2)
+    upper_bound = math.floor((-quad_b + math.sqrt(quad_b ** 2 - 8 * y_target_min)) / 2)
+    if upper_bound >= lower_bound:
+        target_y_interval = (lower_bound, upper_bound)
+    if not target_y_interval:
         continue
 
     for x0 in range(x0_min, x_target_max + 1):
         # Same quadratic formula as above, but on a different axis.
-        # However, we only subtract the square root of the discriminant because the right half of the parabola doesn't
-        # exist due to drag; x just flatlines at the apex of the half-parabola.
+        # Again, check only the right side of the parabola because; x just flatlines at the apex.
         quad_b = -1 - 2 * x0
         t_x_first = math.ceil((-quad_b - math.sqrt(quad_b ** 2 - 8 * x_target_min)) / 2)
 
@@ -52,11 +50,11 @@ for y0 in range(y_target_min, -y_target_min):
             t_x_last = math.floor((-quad_b - math.sqrt(t_x_last_discriminant)) / 2)
             hit_target = (
                 t_x_last >= t_x_first and
-                any(y[0] <= t_x_last and y[1] >= t_x_first for y in target_y_intervals)
+                target_y_interval[0] <= t_x_last and target_y_interval[1] >= t_x_first
             )
         else:
             # Drag reduces v_x to 0 before we get "close" to x_target_max
-            hit_target = any(y[1] >= t_x_first for y in target_y_intervals)
+            hit_target = target_y_interval[1] >= t_x_first
 
         if hit_target:
             successful_initial_velocity_count += 1
