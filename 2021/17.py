@@ -49,6 +49,12 @@ for y0 in range(y_target_min, -y_target_min):
                 t_x_last >= t_x_first and
                 target_y_interval[0] <= t_x_last and target_y_interval[1] >= t_x_first
             )
+
+            if t_x_last < target_y_interval[0]:
+                # (Optional) As x0 increases, the x interval comes sooner and sooner, but once we completely go left
+                # of the y interval's lower bound, we can exit early.
+                # @TODO Tighten the x0 bounds for a given y0 further
+                break
         else:
             # Drag reduces v_x to 0 before we get "close" to x_target_max
             hit_target = target_y_interval[1] >= t_x_first
