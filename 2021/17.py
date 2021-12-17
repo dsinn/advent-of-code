@@ -33,11 +33,19 @@ while True:
     target_y_intervals = []
     # y may cross the y target zone on both the left and right halves of the parabola, so check both.
     for side_of_parabola in [-1, 1]:
-        lower_bound = math.ceil((-quad_b + side_of_parabola * math.sqrt(quad_b ** 2 - 8 * y_target_max)) / 2)
-        upper_bound = math.floor((-quad_b + side_of_parabola * math.sqrt(quad_b ** 2 - 8 * y_target_min)) / 2)
-        if lower_bound > 0 and upper_bound >= lower_bound: # ignore t < 0 and misses
-            target_y_intervals.append((lower_bound, upper_bound))
+        lower_bound = (-quad_b + side_of_parabola * math.sqrt(quad_b ** 2 - 8 * y_target_max)) / 2
+        upper_bound = (-quad_b + side_of_parabola * math.sqrt(quad_b ** 2 - 8 * y_target_min)) / 2
+        discrete_lower_bound = math.ceil(lower_bound)
+        discrete_upper_bound = math.floor(upper_bound)
+        if discrete_lower_bound > 0 and discrete_upper_bound >= discrete_lower_bound: # ignore t < 0 and misses
+            target_y_intervals.append((discrete_lower_bound, discrete_upper_bound))
     if not target_y_intervals:
+        # I _think_ the middle of the bounds converges to a non-integer.
+        # If true, once we're close enough to the asymptote, it's impossible to hit with any higher y0 values.
+        # Thus, exit when both intervals fall between two consecutive integers.
+        # @TODO Prove this
+        if y0 > 0 and upper_bound - lower_bound < 0.5: # Arbitrary until we prove this...
+            break
         continue
 
     for x0 in range(x0_min, x_target_max + 1):
@@ -60,8 +68,8 @@ while True:
             apex = y0 * (y0 + 1) // 2
             if apex > highest_success_apex:
                 highest_success_apex = apex
-                print(f'New highest apex (part 1): {apex}')
             successful_initial_velocity_count += 1
-            print(f'Success count (part 2): {successful_initial_velocity_count}; v_init = {(x0, y0)}')
+            print(f'Hit #{successful_initial_velocity_count} with v_init = {(x0, y0)}')
 
-# @TODO Figure out an ending condition
+print(f'Part 1: {highest_success_apex}')
+print(f'Part 2: {successful_initial_velocity_count}')
