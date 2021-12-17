@@ -30,14 +30,11 @@ for y0 in range(y_target_min, -y_target_min):
     quad_b = -1 - 2 * y0
     # Because we assume the y target zone coordinates are negative,
     # the projectile reaches y_target_max before y_target_min and the order in the range is reversed.
-    target_y_interval = None
     # Only check the right half of the parabola because we don't care about t < 0
-    lower_bound = math.ceil((-quad_b + math.sqrt(quad_b ** 2 - 8 * y_target_max)) / 2)
-    upper_bound = math.floor((-quad_b + math.sqrt(quad_b ** 2 - 8 * y_target_min)) / 2)
-    if upper_bound >= lower_bound:
-        target_y_interval = (lower_bound, upper_bound)
-    if not target_y_interval:
-        continue
+    target_y_interval = (
+        math.ceil((-quad_b + math.sqrt(quad_b ** 2 - 8 * y_target_max)) / 2),
+        math.floor((-quad_b + math.sqrt(quad_b ** 2 - 8 * y_target_min)) / 2)
+    )
 
     for x0 in range(x0_min, x_target_max + 1):
         # Same quadratic formula as above, but on a different axis.
