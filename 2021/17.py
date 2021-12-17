@@ -6,7 +6,6 @@ import re
 f = open(f'{dirname(__file__)}/17.txt', 'r')
 x_target_min, x_target_max, y_target_min, y_target_max = [int(group) for group in re.search('^target area: x=(-?\d+)..(-?\d+), y=(-?\d+)..(-?\d+)$', f.read().rstrip()).groups()]
 
-highest_success_apex = 0
 successful_initial_velocity_count = 0
 
 # For simplicity, assume x_target_min and x_target_max are always positive while
@@ -65,11 +64,9 @@ while True:
             hit_target = any(y[1] >= t_x_first for y in target_y_intervals)
 
         if hit_target:
-            apex = y0 * (y0 + 1) // 2
-            if apex > highest_success_apex:
-                highest_success_apex = apex
             successful_initial_velocity_count += 1
             print(f'Hit #{successful_initial_velocity_count} with v_init = {(x0, y0)}')
+            apex = y0 * (y0 + 1) // 2
 
-print(f'Part 1: {highest_success_apex}')
+print(f'Part 1: {apex}')
 print(f'Part 2: {successful_initial_velocity_count}')
