@@ -42,17 +42,19 @@ for y0 in range(y_target_min, -y_target_min):
 
     for x0 in range(x0_min, x_target_max + 1):
         # Same quadratic formula as above, but on a different axis.
-        # However, we only subtract the discriminant because the right half of the parabola doesn't exist
-        # due to drag; x just flatlines at the apex of the half-parabola.
+        # However, we only subtract the square root of the discriminant because the right half of the parabola doesn't
+        # exist due to drag; x just flatlines at the apex of the half-parabola.
         quad_b = -1 - 2 * x0
         t_x_first = math.ceil((-quad_b - math.sqrt(quad_b ** 2 - 8 * x_target_min)) / 2)
-        try:
-            t_x_last = math.floor((-quad_b - math.sqrt(quad_b ** 2 - 8 * x_target_max)) / 2)
+
+        t_x_last_discriminant = quad_b ** 2 - 8 * x_target_max
+        if t_x_last_discriminant >= 0:
+            t_x_last = math.floor((-quad_b - math.sqrt(t_x_last_discriminant)) / 2)
             hit_target = (
                 t_x_last >= t_x_first and
                 any(y[0] <= t_x_last and y[1] >= t_x_first for y in target_y_intervals)
             )
-        except ValueError:
+        else:
             # Drag reduces v_x to 0 before we get "close" to x_target_max
             hit_target = any(y[1] >= t_x_first for y in target_y_intervals)
 
