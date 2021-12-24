@@ -3,12 +3,10 @@ from os.path import dirname
 
 f = open(f'{dirname(__file__)}/11.txt', 'r')
 
-energy_levels = list(
-    map(
-        lambda line: list(map(lambda raw_energy_level: int(raw_energy_level), list(line.rstrip()))),
-        f.readlines()
-    )
-)
+energy_levels = [
+    [int(raw_energy_level) for raw_energy_level in list(line.rstrip()]
+    for line in f.readlines()
+]
 
 def increment_octopus_energy(energy_levels, y, x):
     if y < 0 or x < 0:

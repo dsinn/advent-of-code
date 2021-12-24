@@ -35,7 +35,7 @@ def apply_fold(grid, row_to_fold):
 
 # For performance, we could instead keep track of how many dots are visible and update for each fold
 def count_visible_dots(grid):
-    return sum(list(map(lambda row: row.count(True), grid)))
+    return sum([row.count(True) for row in grid])
 
 def transpose(grid):
     return list(map(list, zip(*grid)))

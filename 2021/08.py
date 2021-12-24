@@ -18,24 +18,10 @@ ORIGINAL_PATTERNS = {
     'abcdfg': '9'
 }
 
-entries = list(
-    map(
-        lambda line: tuple(map(lambda raw_side: raw_side.split(' '), line.rstrip().split(' | '))),
-        f.readlines()
-    )
-)
+entries = [tuple(map(lambda raw_side: raw_side.split(' '), line.rstrip().split(' | '))) for line in f.readlines()]
 
 print('Part 1: ', end = '')
-print(
-    sum(
-        list(
-            map(
-                lambda entry: len(list(filter(lambda pattern: len(pattern) in [2, 4, 3, 7], entry[1]))),
-                entries
-            )
-        )
-    )
-)
+print(sum([len([pattern for pattern in entry[1] if len(pattern) in [2, 4, 3, 7]]) for entry in entries]))
 
 def decode_entry(entry):
     patterns, output = entry
@@ -45,7 +31,7 @@ def decode_entry(entry):
         patterns_by_length[len(pattern)].append(pattern)
 
     # Some of the so-called "easy digits" from Part 1
-    pattern_one, pattern_seven, pattern_eight = list(map(lambda segments: patterns_by_length[segments][0], [2, 3, 7]))
+    pattern_one, pattern_seven, pattern_eight = [patterns_by_length[segments][0] for segments in [2, 3, 7]]
 
     remapping = {} # scrambled segments ->  original segments
 
@@ -86,14 +72,7 @@ def decode_entry(entry):
     return int(
         reduce(
             lambda output_string, digit_segments: output_string + ORIGINAL_PATTERNS[''.join(
-                sorted(
-                    list(
-                        map(
-                            lambda segment: remapping[segment],
-                            list(digit_segments)
-                        )
-                    )
-                )
+                sorted([remapping[segment] for segment in list(digit_segments)])
             )],
             output,
             ''
@@ -101,4 +80,4 @@ def decode_entry(entry):
         10
     )
 
-print(f'Part 2: {sum(list(map(decode_entry, entries)))}')
+print(f'Part 2: {sum([decode_entry(entry) for entry in entries])}')

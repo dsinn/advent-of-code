@@ -10,7 +10,7 @@ def calculate_cost(positions, destination, fuel_by_distance_lambda):
         total_cost += fuel_by_distance_lambda(abs(destination - position))
     return total_cost
 
-positions = list(map(lambda raw_position: int(raw_position), f.read().rstrip().split(',')))
+positions = [int(raw_position) for raw_position in f.read().rstrip().split(',')]
 positions.sort() # There are O(n) ways of finding the median, but 🤷‍♀️
 median = positions[len(positions) // 2]
 print(f'Part 1: {calculate_cost(positions, median, lambda dist: dist)}')

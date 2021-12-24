@@ -5,12 +5,10 @@ from queue import PriorityQueue
 
 f = open(f'{dirname(__file__)}/15.txt', 'r')
 
-risk_levels = list(
-    map(
-        lambda line: list(map(lambda raw_risk_level: int(raw_risk_level), list(line.rstrip()))),
-        f.readlines()
-    )
-)
+risk_levels = [
+    [int(raw_risk_level) for raw_risk_level in list(line.rstrip())]
+    for line in f.readlines()
+]
 
 # Dijkstra's algorithm, adapted for this problem
 def lowest_risk(risk_levels):

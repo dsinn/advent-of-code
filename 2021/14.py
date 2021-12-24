@@ -7,12 +7,7 @@ f = open(f'{dirname(__file__)}/14.txt', 'r')
 
 template = f.readline().rstrip()
 
-rules = dict(
-    map(
-        lambda line: tuple(re.search('^([A-Z]+) -> ([A-Z]+)$', line).groups()),
-        f.read().strip().split("\n")
-    )
-)
+rules = dict([tuple(re.search('^([A-Z]+) -> ([A-Z]+)$', line).groups()) for line in f.read().strip().split("\n")])
 
 letter_counter = defaultdict(lambda: 0)
 letter_counter.update(Counter(template).most_common())

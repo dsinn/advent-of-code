@@ -7,7 +7,7 @@ REPRODUCTIVE_PERIOD = 7
 fish_by_modulo = [0 for _ in range(REPRODUCTIVE_PERIOD)]
 newborn_by_modulo = fish_by_modulo.copy()
 total_fish = 0
-for timer in list(map(lambda timer: int(timer), f.read().rstrip().split(','))):
+for timer in [int(timer) for timer in f.read().rstrip().split(',')]:
     fish_by_modulo[timer] += 1
     total_fish += 1
 

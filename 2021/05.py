@@ -12,12 +12,7 @@ part2_frequency_map = defaultdict(lambda: 0)
 part2_overlap_points = 0
 
 for line in f.readlines():
-    x1, y1, x2, y2 = list(
-        map(
-            lambda raw_coord: int(raw_coord),
-            re.search('^(\d+),(\d+) -> (\d+),(\d+)$', line).groups()
-        )
-    )
+    x1, y1, x2, y2 = [int(raw_coord) for raw_coord in re.search('^(\d+),(\d+) -> (\d+),(\d+)$', line).groups()]
     is_diagonal = x1 != x2 and y1 != y2
     x_step = (x2 > x1) - (x2 < x1)
     y_step = (y2 > y1) - (y2 < y1)

@@ -9,7 +9,7 @@ sliding_window_increase_count = 0
 f = open(f'{dirname(__file__)}/01.txt', 'r')
 
 # Initialize the sliding window so that the main loop is simpler
-previous_numbers = list(map(lambda x: int(x.rstrip()), [f.readline() for x in range(WINDOW_SIZE)]))
+previous_numbers = [int(f.readline().rstrip()) for x in range(WINDOW_SIZE)]
 
 # ...with the trade-off being having to compensate for Part 1 here.
 for i in range(1, len(previous_numbers)):

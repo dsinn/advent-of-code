@@ -3,12 +3,10 @@ from os.path import dirname
 
 f = open(f'{dirname(__file__)}/09.txt', 'r')
 
-heights = list(
-    map(
-        lambda line: list(map(lambda raw_height: int(raw_height), list(line.rstrip()))),
-        f.readlines()
-    )
-)
+heights = [
+    [int(raw_height) for raw_height in list(line.rstrip())]
+    for line in f.readlines()
+]
 
 def get_basin_size(heights, row, col, previous_height = -1, basin_points = None):
     if not basin_points:
