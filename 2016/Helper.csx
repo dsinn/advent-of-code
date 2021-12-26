@@ -17,6 +17,6 @@ class Helper {
     }
 
     private static string ReplacePathExtensionWithTxt(string filePath) {
-        return Regex.Replace(filePath, "\\.csx$", ".txt");
+        return Regex.Replace(filePath, @"\.csx$", ".txt");
     }
 }
