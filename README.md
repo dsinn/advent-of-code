@@ -4,7 +4,7 @@ Solutions for https://adventofcode.com/
 
 To run a script, first place the input file into the appropriate year directory and name it `{two_digit_day_number}.txt` (_e.g._, `01.txt`).
 
-I only started participating in 2020, so previous years' puzzles were done much later. I like to learn a different language for each years' puzzles.
+I only started participating in 2020, so previous years' puzzles were done much later. I like to learn a different language for each year's puzzles.
 
 * [2021](https://adventofcode.com/2021): Python 3.10
 * [2020](https://adventofcode.com/2020): Ruby 2.7
