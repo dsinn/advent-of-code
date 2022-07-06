@@ -5,7 +5,7 @@ import kotlin.math.abs
 
 val wirePaths = File("03.txt").readText().trim().split("\n")
 
-// TODO: Implement something that is not O(n^2)
+// TODO: Implement something that is faster than O(n^2)
 data class Point(val x: Int, val y: Int)
 data class Segment(val start: Point, val end: Point, val length: Int)
 
@@ -58,21 +58,20 @@ for (firstWireSegment in firstWireSegments) {
                 // the top and bottom points have the same x-value. This check is only possible because the segments
                 // are either horizontal or vertical.
 
-                val intersectionX = it[1].x
-                val intersectionY = it[0].y
+                val intersection = Point(it[1].x, it[0].y)
 
                 // Part 1
-                shortestDistance = minOf(shortestDistance, abs(intersectionX) + abs(intersectionY))
+                shortestDistance = minOf(shortestDistance, abs(intersection.x) + abs(intersection.y))
 
                 // Part 2
 
                 // Compute how many steps are needed to go from the beginning of the segment to the intersection
                 // for each wire.
                 val partialSteps = listOf(
-                    intersectionX - firstWireSegment.start.x,
-                    intersectionY - firstWireSegment.start.y,
-                    intersectionX - secondWireSegment.start.x,
-                    intersectionY - secondWireSegment.start.y,
+                    intersection.x - firstWireSegment.start.x,
+                    intersection.y - firstWireSegment.start.y,
+                    intersection.x - secondWireSegment.start.x,
+                    intersection.y - secondWireSegment.start.y,
                 ).map(::abs).sum()
                 minimumSteps = minOf(minimumSteps, firstWireSteps + secondWireSteps + partialSteps)
             }
