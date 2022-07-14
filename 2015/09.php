@@ -8,7 +8,7 @@ while ($line = rtrim(fgets($f))) {
         throw new UnexpectedValueException('Unable to parse the following line: ' . PHP_EOL . $line);
     }
 
-    $distance = intval(intval($matches[3], 10));
+    $distance = intval($matches[3], 10);
     $distances[$matches[1]][$matches[2]] = $distance;
     $distances[$matches[2]][$matches[1]] = $distance;
 }
