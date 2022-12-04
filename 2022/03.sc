@@ -24,7 +24,7 @@ val lines = Source.fromFile("03.txt").getLines.toList
     print("Part 2: ")
     println(
         lines.grouped(3).map { group =>
-        priority(
+            priority(
                 group.map(_.toList).reduce(_ intersect _).head
             )
         }.sum
