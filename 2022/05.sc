@@ -11,9 +11,10 @@ val stacks = collection.mutable.Map[Int, ArrayBuffer[Char]]()
 
     crateLines.split("\n").foreach { line =>
         crateRegex.findAllMatchIn(line).foreach { mi =>
-            val stackNumber = mi.start / 4 + 1
-            stacks.getOrElseUpdate(stackNumber, new ArrayBuffer[Char]())
-            stacks(stackNumber).addOne(mi.group(1).head)
+            stacks.getOrElseUpdate(
+                mi.start / 4 + 1,
+                new ArrayBuffer[Char]()
+            ).addOne(mi.group(1).head)
         }
     }
 }
