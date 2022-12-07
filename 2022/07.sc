@@ -36,12 +36,12 @@ def buildFileStructureFromOutputFile(filePath: String): Dir = {
         if (line.startsWith("$ cd ")) {
             val destination = line.substring(5).trim
 
-            if (destination == "/") {
-                cwd = root
+            cwd = if (destination == "/") {
+                root
             } else if (destination == "..") {
-                cwd = cwd.parent
+                cwd.parent
             } else {
-                cwd = cwd.touchDir(destination)
+                cwd.touchDir(destination)
             }
 
             line = lineIterator.next
