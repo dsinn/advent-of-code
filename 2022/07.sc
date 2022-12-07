@@ -24,68 +24,71 @@ class Dir(val name: String, val parent: Dir = null) {
     }
 }
 
-def buildFileStructureFromOutputFile(filePath: String): Dir = {
-    val lineIterator = Source.fromFile(filePath).getLines
-    val fileRegex = "^(\\d+) (.+)$".r
+object Dir {
+    val FileRegex = "^(\\d+) (.+)$".r
 
-    val root = new Dir("/")
-    var line = lineIterator.next
-    var cwd = root
+    def buildFileStructureFromOutputFile(filePath: String): Dir = {
+        val root = new Dir("/")
+        var cwd = root
 
-    while (lineIterator.hasNext) {
-        if (line.startsWith("$ cd ")) {
-            val destination = line.substring(5).trim
+        val lineIterator = Source.fromFile(filePath).getLines
+        var line = lineIterator.next
 
-            cwd = if (destination == "/") {
-                root
-            } else if (destination == "..") {
-                cwd.parent
-            } else {
-                cwd.touchDir(destination)
-            }
+        while (lineIterator.hasNext) {
+            if (line.startsWith("$ cd ")) {
+                val destination = line.substring(5).trim
 
-            line = lineIterator.next
-        } else if (line == "$ ls") {
-            breakable {
-                while (true) {
-                    if (!lineIterator.hasNext) {
-                        break
-                    }
+                cwd = if (destination == "/") {
+                    root
+                } else if (destination == "..") {
+                    cwd.parent
+                } else {
+                    cwd.touchDir(destination)
+                }
 
-                    line = lineIterator.next
+                line = lineIterator.next
+            } else if (line == "$ ls") {
+                breakable {
+                    while (true) {
+                        if (!lineIterator.hasNext) {
+                            break
+                        }
 
-                    if (line.startsWith("$")) {
-                        break
-                    }
+                        line = lineIterator.next
 
-                    val matchOption = fileRegex.findFirstMatchIn(line)
-                    if (!matchOption.isEmpty) {
-                        val mi = matchOption.get
-                        cwd.addFile(mi.group(2), mi.group(1).toInt)
+                        if (line.startsWith("$")) {
+                            break
+                        }
+
+                        val matchOption = FileRegex.findFirstMatchIn(line)
+                        if (!matchOption.isEmpty) {
+                            val mi = matchOption.get
+                            cwd.addFile(mi.group(2), mi.group(1).toInt)
+                        }
                     }
                 }
+            } else {
+                throw new RuntimeException(s"I don't know how to handle \"${line}\"")
             }
-        } else {
-            throw new RuntimeException(s"I don't know how to handle \"${line}\"")
         }
+
+        return root
     }
 
-    return root
+    def inOrderIterator(dir: Dir): Iterator[Dir] = {
+        for (result <- Iterator(dir) ++ dir.dirs.values.flatMap(inOrderIterator(_))) yield result
+    }
 }
 
-def inOrderIterator(dir: Dir): Iterator[Dir] = {
-    for (result <- Iterator(dir) ++ dir.dirs.values.flatMap(inOrderIterator(_))) yield result
-}
-
-val root = buildFileStructureFromOutputFile("07.txt")
+val root = Dir.buildFileStructureFromOutputFile("07.txt")
 
 print("Part 1: ")
-println(inOrderIterator(root).foldLeft(0)((acc, dir) => acc + (if (dir.size <= 100000) dir.size else 0)))
+println(Dir.inOrderIterator(root).foldLeft(0)((acc, dir) => acc + (if (dir.size <= 100000) dir.size else 0)))
 
 val spaceToFree = 30000000 - 70000000 + root.size
 print("Part 2: ")
 println(
-    inOrderIterator(root).foldLeft(Int.MaxValue)(
+    Dir.inOrderIterator(root).foldLeft(Int.MaxValue)(
         (acc, dir) => acc.min(if (dir.size >= spaceToFree) dir.size else Int.MaxValue)
     )
 )
