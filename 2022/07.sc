@@ -19,6 +19,10 @@ class Dir(val name: String, val parent: Dir = null) {
         }
     }
 
+    def inOrderIterator: Iterator[Dir] = {
+        for (result <- Iterator(this) ++ dirs.values.flatMap(_.inOrderIterator)) yield result
+    }
+
     def touchDir(name: String): Dir = {
         return dirs.getOrElseUpdate(name, new Dir(name, this))
     }
@@ -74,21 +78,17 @@ object Dir {
 
         return root
     }
-
-    def inOrderIterator(dir: Dir): Iterator[Dir] = {
-        for (result <- Iterator(dir) ++ dir.dirs.values.flatMap(inOrderIterator(_))) yield result
-    }
 }
 
 val root = Dir.buildFileStructureFromOutputFile("07.txt")
 
 print("Part 1: ")
-println(Dir.inOrderIterator(root).foldLeft(0)((acc, dir) => acc + (if (dir.size <= 100000) dir.size else 0)))
+println(root.inOrderIterator.foldLeft(0)((acc, dir) => acc + (if (dir.size <= 100000) dir.size else 0)))
 
 val spaceToFree = 30000000 - 70000000 + root.size
 print("Part 2: ")
 println(
-    Dir.inOrderIterator(root).foldLeft(Int.MaxValue)(
+    root.inOrderIterator.foldLeft(Int.MaxValue)(
         (acc, dir) => acc.min(if (dir.size >= spaceToFree) dir.size else Int.MaxValue)
     )
 )
