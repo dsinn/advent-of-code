@@ -28,7 +28,7 @@ def calcUniqueTailPositions(lines: Seq[String], knots: Int): Int = {
                 val gaps = (0 to 1).map { axis => knotsPos(i - 1)(axis) - knotsPos(i)(axis) }
                 if (gaps.exists(_.abs > 1)) {
                     gaps.zipWithIndex.foreach {
-                        case (gap, axis) => knotsPos(i)(axis) += gap min 1 max -1
+                        case (gap, axis) => knotsPos(i)(axis) += gap.signum
                     }
                 }
             }
