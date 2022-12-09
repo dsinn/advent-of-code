@@ -1,5 +1,6 @@
 #!/usr/bin/env amm
 import scala.io.Source
+import scala.util.control.Breaks.{break, breakable}
 
 val lines = Source.fromFile("09.txt").getLines.toList
 
@@ -24,16 +25,18 @@ def calcUniqueTailPositions(lines: Seq[String], knots: Int): Int = {
             knotsPos.head(0) = nextHeadPos._1
             knotsPos.head(1) = nextHeadPos._2
 
-            for (i <- 1 until knots) {
-                val gaps = (0 to 1).map { axis => knotsPos(i - 1)(axis) - knotsPos(i)(axis) }
-                if (gaps.exists(_.abs > 1)) {
+            breakable {
+                for (i <- 1 until knots) {
+                    val gaps = (0 to 1).map { axis => knotsPos(i - 1)(axis) - knotsPos(i)(axis) }
+                    if (gaps.forall(_.abs <= 1)) break
+
                     gaps.zipWithIndex.foreach {
                         case (gap, axis) => knotsPos(i)(axis) += gap.signum
                     }
                 }
-            }
 
-            tailPosSet.add(knotsPos.last.mkString(","))
+                tailPosSet.add(knotsPos.last.mkString(","))
+            }
         }
     }
 
