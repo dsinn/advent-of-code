@@ -17,22 +17,23 @@ val heights = Source.fromFile("08.txt").getLines.toArray.map(_.split("").map(_.t
 
     val axes = Array(0 until isVisible.length, 0 until isVisible.head.length)
 
-    Array(0, 1).zip(
-        List(
-            (i: Int) => heights(i)(_: Int),
-            (j: Int) => heights(_: Int)(j)
-        )
-    ).zip(
-        List(
-            (i: Int) => isVisible(i)(_: Int) = true,
-            (j: Int) => isVisible(_: Int)(j) = true
-        )
-    ).foreach { case ((axisIndex, heightFunc), visibleFunc) =>
-        axes(axisIndex).foreach { i =>
-            val otherAxis = axes(1 - axisIndex)
-            List(otherAxis, otherAxis.reverse).foreach { range =>
-                markVisibleTreesInOneDirection(range, heightFunc(i), visibleFunc(i))
-            }
+    for (
+        (axisIndex, heightFunc, visibleFunc) <- (
+            Array(0, 1),
+            List(
+                (i: Int) => heights(i)(_: Int),
+                (j: Int) => heights(_: Int)(j)
+            ),
+            List(
+                (i: Int) => isVisible(i)(_: Int) = true,
+                (j: Int) => isVisible(_: Int)(j) = true
+            )
+        ).zipped;
+        i <- axes(axisIndex)
+    ) {
+        val otherAxis = axes(1 - axisIndex)
+        List(otherAxis, otherAxis.reverse).foreach { range =>
+            markVisibleTreesInOneDirection(range, heightFunc(i), visibleFunc(i))
         }
     }
 
@@ -61,21 +62,21 @@ val heights = Source.fromFile("08.txt").getLines.toArray.map(_.split("").map(_.t
         treeCount
     }
 
-    for (i <- 0 until scores.length) {
-        for (j <- 0 until scores.head.length) {
+    for (
+        i <- 0 until scores.length;
+        j <- 0 until scores.head.length;
+        (ranges, heightAtIndex) <- List(
+            List(i - 1 to 0 by -1, i + 1 until scores.length),
+            List(j - 1 to 0 by -1, j + 1 until scores.head.length)
+        ).zip(
             List(
-                List(i - 1 to 0 by -1, i + 1 until scores.length),
-                List(j - 1 to 0 by -1, j + 1 until scores.head.length)
-            ).zip(
-                List(
-                    heights(_: Int)(j),
-                    heights(i)(_: Int)
-                )
-            ).foreach { case (ranges, heightAtIndex) =>
-                ranges.foreach { range =>
-                    scores(i)(j) *= calcScoreInOneDirection(heights(i)(j), range, heightAtIndex)
-                }
-            }
+                heights(_: Int)(j),
+                heights(i)(_: Int)
+            )
+        )
+    ) {
+        ranges.foreach { range =>
+            scores(i)(j) *= calcScoreInOneDirection(heights(i)(j), range, heightAtIndex)
         }
     }
 
