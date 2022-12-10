@@ -7,12 +7,11 @@ val heights = Source.fromFile("08.txt").getLines.toArray.map(_.split("").map(_.t
     val isVisible = Array.ofDim[Boolean](heights.length, heights.head.length)
 
     def markVisibleTreesInOneDirection(range: Range, heightAtIndex: Int => Int, markVisible: Int => Unit): Unit = {
-        var tallestHeight = -1
-        range.foreach { k =>
+        range.foldLeft(-1)((tallestHeight, k) => {
             val currentHeight = heightAtIndex(k)
             if (currentHeight > tallestHeight) markVisible(k)
-            tallestHeight = tallestHeight max currentHeight
-        }
+            tallestHeight max currentHeight
+        })
     }
 
     val axes = Array(0 until isVisible.length, 0 until isVisible.head.length)
@@ -52,22 +51,15 @@ val heights = Source.fromFile("08.txt").getLines.toArray.map(_.split("").map(_.t
     }
 
     def calcScoreInOneDirection(height: Int, range: Range, heightAtIndex: Int => Int): Int = {
-        var treeCount = 0
-        range.foreach { k =>
-            treeCount += 1
-            if (heightAtIndex(k) >= height) {
-                return treeCount
-            }
-        }
-        treeCount
+        range.takeWhile(heightAtIndex(_) < height).foldLeft(1)((treeCount, _) => treeCount + 1)
     }
 
     for (
         i <- 0 until scores.length;
         j <- 0 until scores.head.length;
         (ranges, heightAtIndex) <- List(
-            List(i - 1 to 0 by -1, i + 1 until scores.length),
-            List(j - 1 to 0 by -1, j + 1 until scores.head.length)
+            List(i - 1 to 1 by -1, i + 1 to scores.length - 2),
+            List(j - 1 to 1 by -1, j + 1 to scores.head.length - 2)
         ).zip(
             List(
                 heights(_: Int)(j),
