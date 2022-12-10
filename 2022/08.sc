@@ -73,11 +73,10 @@ val heights = Source.fromFile("08.txt").getLines.toArray.map(_.split("").map(_.t
                 heights(_: Int)(j),
                 heights(i)(_: Int)
             )
-        )
+        );
+        range <- ranges
     ) {
-        ranges.foreach { range =>
-            scores(i)(j) *= calcScoreInOneDirection(heights(i)(j), range, heightAtIndex)
-        }
+        scores(i)(j) *= calcScoreInOneDirection(heights(i)(j), range, heightAtIndex)
     }
 
     println(s"Part 2: ${scores.foldLeft(0)((answer, row) => answer max row.max)}")
