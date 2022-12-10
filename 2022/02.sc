@@ -25,12 +25,10 @@ val part2Points = Map(
     "C Z" -> 7,
 )
 
-var part1, part2 = 0
-
-Source.fromFile("02.txt").getLines.foreach { line =>
-    part1 += part1Points(line)
-    part2 += part2Points(line)
+Source.fromFile("02.txt").getLines.foldLeft(Array(0, 0))((answers, line) => {
+    answers(0) += part1Points(line)
+    answers(1) += part2Points(line)
+    answers
+}).zip(LazyList.from(1)).foreach { case (answer, part) =>
+    println(s"Part ${part}: ${answer}")
 }
-
-println(s"Part 1: ${part1}")
-println(s"Part 2: ${part2}")
