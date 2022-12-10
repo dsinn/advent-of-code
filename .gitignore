@@ -1,1 +1,5 @@
 *.txt
+
+# 2022 - Scala
+.ammonite
+.metals
