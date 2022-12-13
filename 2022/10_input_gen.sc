@@ -2,8 +2,8 @@
 import scala.io.Source
 
 /**
-  * Given a file of at most 40 characters on 6 lines, prints an input file such that when run with your AoC solution,
-  * your program outputs the # characters in the same places.
+  * Given a text file of at most 40 characters in width on 6 lines, prints an input file such that when run with your
+  * AoC solution for Day 10 Part 2, your program outputs the # characters of the text file in the same places.
   *
   * Note that the first two characters on the first line will always be # because of how long the addx operations take.
   *
