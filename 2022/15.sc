@@ -66,12 +66,13 @@ val sensorsAndDist = Source.fromFile("15.txt").getLines.map { line =>
         val y = slopes(0) * x + b(0)
 
         if (range.contains(x) && range.contains(y) && segments.forall { case (start, end) =>
-            start._1 <= x && x <= end._1 &&
+            start._1.min(end._1) <= x && x <= start._1.max(end._1) &&
             start._2.min(end._2) <= y && y <= start._2.max(end._2)
         } && sensorsAndDist.forall { case (sensor, dist) =>
             (sensor._1 - x).abs + (sensor._2 - y).abs > dist
         }) {
             println(s"(${x}, ${y}) -> ${x.toLong * 4000000 + y}")
+            System.exit(0)
         }
     }
 }
