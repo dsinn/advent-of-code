@@ -20,11 +20,8 @@ def compare(left: JsValue, right: JsValue): Int = {
 
             if (leftArray.size == rightArray.size) 0 else 1
         }
-        case (_: JsArray, _: JsNumber) => {
-            compare(left, JsArray(Vector(right)))
-        }
-        case (_: JsNumber, _: JsArray) =>
-            compare(JsArray(Vector(left)), right)
+        case (_: JsArray, _: JsNumber) => compare(left, JsArray(Vector(right)))
+        case (_: JsNumber, _: JsArray) => compare(JsArray(Vector(left)), right)
         case (_: JsNumber, _: JsNumber) => (right.convertTo[Int] - left.convertTo[Int]).signum
         case _ => throw new RuntimeException(
             s"Invalid types when comparing ${left} and ${right}; only ints and arrays of ints are allowed."
