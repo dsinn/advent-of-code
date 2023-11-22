@@ -3,7 +3,7 @@ import scala.io.Source
 import scala.collection.mutable.Queue
 import scala.util.control.Breaks.{break, breakable}
 
-var elevationA = 'a'.toInt
+val elevationA = 'a'.toInt
 
 var start, end = (-1, -1)
 
