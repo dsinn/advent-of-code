@@ -39,6 +39,8 @@ let () =
   |> Printf.printf "Part 1: %d\n"
 ;;
 
+exception Break
+
 let () =
   let number_rex = Pcre.regexp "\\d+" in
   Pcre.exec_all ~pat:"\\*" schematic
@@ -54,23 +56,30 @@ let () =
          let search_string =
            String.sub schematic search_start_pos (search_end_pos - search_start_pos)
          in
+         let number_substrings =
+           try Pcre.exec_all ~rex:number_rex search_string with
+           | Not_found -> Array.make 0 (Pcre.exec ~pat:"" "")
+         in
          (try
-            Pcre.exec_all ~rex:number_rex search_string
-            |> Array.fold_left
-                 (fun adjacent_numbers substring ->
-                   let number_string = Pcre.get_substring substring 0 in
-                   let length = String.length number_string in
-                   let offset = Pcre.get_substring_ofs substring 0 |> fst in
-                   let leftmost_column = offset mod width in
-                   let rightmost_column = leftmost_column + length - 1 in
-                   if Int.abs (leftmost_column - gear_column) < 2
-                      || Int.abs (rightmost_column - gear_column) < 2
-                      || (leftmost_column < gear_column && rightmost_column > gear_column)
-                   then int_of_string number_string :: adjacent_numbers
-                   else adjacent_numbers)
-                 []
+            Array.fold_left
+              (fun adjacent_numbers substring ->
+                let number_string = Pcre.get_substring substring 0 in
+                let length = String.length number_string in
+                let offset = Pcre.get_substring_ofs substring 0 |> fst in
+                let leftmost_column = offset mod width in
+                let rightmost_column = leftmost_column + length - 1 in
+                if Int.abs (leftmost_column - gear_column) < 2
+                   || Int.abs (rightmost_column - gear_column) < 2
+                   || (leftmost_column < gear_column && rightmost_column > gear_column)
+                then
+                  if List.length adjacent_numbers >= 2
+                  then raise Break
+                  else int_of_string number_string :: adjacent_numbers
+                else adjacent_numbers)
+              []
+              number_substrings
           with
-          | Not_found -> [])
+          | Break -> [])
          |> yield_self (fun adjacent_numbers ->
            if List.length adjacent_numbers = 2
            then List.reduce ( * ) adjacent_numbers
