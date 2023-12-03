@@ -64,7 +64,7 @@ let () =
                     if Int.abs (leftmost_column - gear_column) < 2
                        || Int.abs (rightmost_column - gear_column) < 2
                        || (leftmost_column < gear_column
-                           && leftmost_column + length > gear_column)
+                           && rightmost_column > gear_column)
                     then int_of_string number_string :: adjacent_numbers
                     else adjacent_numbers)
                   []
