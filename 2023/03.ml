@@ -48,9 +48,7 @@ let () =
          let line_start_offset = gear_offset - gear_column in
          [ line_start_offset - width; line_start_offset; line_start_offset + width ]
          |> List.filter (fun pos -> pos >= 0 && pos < String.length schematic)
-         |> List.map (fun pos ->
-           Str.string_after schematic pos
-           |> yield_self (fun s -> Str.string_before s (width - 1)))
+         |> List.map (fun pos -> String.sub schematic pos (width - 1))
          |> List.map (fun line ->
            try
              Pcre.exec_all ~pat:"\\d+" line
@@ -63,8 +61,7 @@ let () =
                     let rightmost_column = leftmost_column + length - 1 in
                     if Int.abs (leftmost_column - gear_column) < 2
                        || Int.abs (rightmost_column - gear_column) < 2
-                       || (leftmost_column < gear_column
-                           && rightmost_column > gear_column)
+                       || (leftmost_column < gear_column && rightmost_column > gear_column)
                     then int_of_string number_string :: adjacent_numbers
                     else adjacent_numbers)
                   []
