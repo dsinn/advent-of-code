@@ -29,7 +29,7 @@ let () =
          let game_id = Str.matched_string line |> int_of_string in
          acc + if is_possible (get_colour_counts line) then game_id else 0)
        0
-  |> yield_self (fun answer -> Printf.printf "Part 1: %d\n" answer)
+  |> Printf.printf "Part 1: %d\n"
 ;;
 
 let () =
@@ -42,14 +42,16 @@ let () =
          get_colour_counts line
          |> List.fold_left
               (fun colour_maxes (count, colour) ->
-                (match StringMap.find_opt colour colour_maxes with
-                 | Some count -> count
-                 | None -> 0)
-                |> Int.max count
-                |> yield_self (fun new_value ->
-                  StringMap.add colour new_value colour_maxes))
+                let new_value =
+                  (match StringMap.find_opt colour colour_maxes with
+                   | Some count -> count
+                   | None -> 0)
+                  |> Int.max count
+                in
+                StringMap.add colour new_value colour_maxes)
               StringMap.empty
-         |> yield_self (fun colour_maxes -> acc + power colour_maxes))
+         |> power
+         |> ( + ) acc)
        0
-  |> yield_self (fun answer -> Printf.printf "Part 2: %d\n" answer)
+  |> Printf.printf "Part 2: %d\n"
 ;;
