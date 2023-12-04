@@ -12,7 +12,7 @@ let get_colour_counts line =
   |> Str.split (Str.regexp " *[:;,] *")
   |> List.tl
   |> List.map (fun colour_count_string ->
-    let pair = Str.split (Str.regexp "  *") colour_count_string in
+    let pair = Str.split (Str.regexp " +") colour_count_string in
     int_of_string (List.nth pair 0), List.nth pair 1)
 ;;
 
