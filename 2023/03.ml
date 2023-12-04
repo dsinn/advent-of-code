@@ -33,7 +33,7 @@ let () =
            (* Hack for the schematic starting with a part number *)
            (if pos = -1 then "." ^ schematic else Str.string_after schematic pos)
            |> Pcre.pmatch ~rex:symbol_rex)
-         |> yield_self (fun has_adjacent_symbol ->
+         |> (fun has_adjacent_symbol ->
            sum + if has_adjacent_symbol then int_of_string number_string else 0))
        0
   |> Printf.printf "Part 1: %d\n"
@@ -80,7 +80,7 @@ let () =
               number_substrings
           with
           | Break -> [])
-         |> yield_self (fun adjacent_numbers ->
+         |> (fun adjacent_numbers ->
            if List.length adjacent_numbers = 2
            then List.reduce ( * ) adjacent_numbers
            else 0)
