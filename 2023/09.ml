@@ -16,12 +16,10 @@ let rows_diffs =
     then diffs
     else calc_diffs next_row (diffs @ [ next_row ])
   in
-  let history =
-    File.lines_of "09.txt"
-    |> Enum.map (fun line -> Str.split (Str.regexp " +") line |> List.map int_of_string)
-    |> List.of_enum
-  in
-  List.map (fun row -> calc_diffs row [ row ]) history
+  File.lines_of "09.txt"
+  |> Enum.map (fun line -> Str.split (Str.regexp " +") line |> List.map int_of_string)
+  |> List.of_enum
+  |> List.map (fun row -> calc_diffs row [ row ])
 ;;
 
 let sum_extrapolees rows_diffs f_extrapolee =
