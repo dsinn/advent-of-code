@@ -25,16 +25,13 @@ let move_rocks_east map =
   Pcre.substitute_substrings
     ~rex
     ~subst:(fun substring ->
-      Pcre.get_substring substring 0
-      |> String.to_seq
+      let s = Pcre.get_substring substring 0 in
+      String.to_seq s
       |> Seq.fold_left
-           (fun counts c ->
-             Hashtbl.replace counts c (Hashtbl.find_default counts c 0 + 1);
-             counts)
-           (Hashtbl.create 0)
-      |> fun counts ->
-      String.repeat "." (Hashtbl.find counts '.')
-      ^ String.repeat "O" (Hashtbl.find counts 'O'))
+           (fun rock_count ch -> (if ch = 'O' then 1 else 0) |> ( + ) rock_count)
+           0
+      |> fun rock_count ->
+      String.repeat "." (String.length s - rock_count) ^ String.repeat "O" rock_count)
     map
 ;;
 
