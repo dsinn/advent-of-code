@@ -95,10 +95,6 @@ let () =
   let starting_nodes =
     List.map fst map_list |> List.filter (fun key -> Pcre.pmatch ~pat:"A$" key)
   in
-  let rec gcd a b =
-    if Big_int.equal b Big_int.zero then a else gcd b (Big_int.modulo a b)
-  in
-  let lcm a b = gcd a b |> Big_int.div (Big_int.mul a b |> Big_int.abs_big_int) in
   (*
      It seems that the input is crafted such that every ghost ends up on a Z node uniquely at the end of their cycle,
      AND that the starting node is always the beginning of a cycle???
@@ -108,7 +104,7 @@ let () =
   List.map (compute_period_and_valid_steps directions map) starting_nodes
   |> List.fold_left
        (fun product (period, _) -> Big_int.big_int_of_int period |> lcm product)
-       (Big_int.big_int_of_int 1)
+       (Big_int.one)
   |> Big_int.to_string
   |> Printf.printf "Part 2: %s\n"
 ;;

@@ -11,11 +11,14 @@ let tap f x =
 
 let read_file (filename : string) =
   Stdlib.open_in_bin filename
-  |> (fun channel ->
-    let content = really_input_string channel (in_channel_length channel) in
-    Stdlib.close_in channel;
-    content |> String.trim)
+  |> fun channel ->
+  let content = really_input_string channel (in_channel_length channel) in
+  Stdlib.close_in channel;
+  content |> String.trim
 ;;
+
+let rec gcd a b = if Big_int.equal b Big_int.zero then a else gcd b (Big_int.modulo a b)
+let lcm a b = gcd a b |> Big_int.div (Big_int.mul a b |> Big_int.abs_big_int)
 
 let shoelace_area points =
   if List.length points < 3 then failwith "A polygon needs more than two points";
