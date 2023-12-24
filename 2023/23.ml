@@ -2,31 +2,6 @@
 
 #use "helpers.ml"
 
-let remove_dead_ends map =
-  let y_max = Array.length map - 2 in
-  let x_max = Array.length map.(0) - 1 in
-  let dead_end_found = ref true in
-  while !dead_end_found do
-    dead_end_found := false;
-    for y = 1 to y_max do
-      for x = 0 to x_max do
-        if map.(y).(x) <> '#'
-           && [ y + 1, x; y - 1, x; y, x + 1; y, x - 1 ]
-              |> List.count_matching (fun (y', x') ->
-                try map.(y').(x') <> '#' with
-                | Invalid_argument _ -> false)
-              = 1
-        then (
-          map.(y).(x) <- '#';
-          dead_end_found := true;
-          (* @TODO Continue searching along this path and assigning '#' until you hit an intersection *)
-          Printf.printf "Removed dead end at (%d, %d)\n" y x);
-        flush stdout
-      done
-    done
-  done
-;;
-
 let rec longest_hike (y, x) distance visited possible_directions y_goal map =
   if y = y_goal
   then distance
@@ -54,7 +29,6 @@ let () =
     |> String.split_on_char '\n'
     |> List.map (fun line -> String.to_seq line |> Array.of_seq)
     |> Array.of_list
-    |> tap remove_dead_ends
   in
   [ (fun y x ->
       match map.(y).(x) with
