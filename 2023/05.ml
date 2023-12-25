@@ -2,8 +2,6 @@
 
 #use "helpers.ml"
 
-open Str
-
 let rec find_lowest_location_number src_start src_end map_ranges =
   if List.is_empty map_ranges
   then src_start

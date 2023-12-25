@@ -2,8 +2,6 @@
 
 #use "helpers.ml"
 
-open Str
-
 let rows_diffs =
   let rec pair_map f list =
     match list with

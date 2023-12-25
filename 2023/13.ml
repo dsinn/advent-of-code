@@ -5,7 +5,6 @@
 #require "pcre"
 
 open Pcre
-open Str
 
 let transpose pattern =
   let src_rows = String.split_on_char '\n' pattern |> Array.of_list in

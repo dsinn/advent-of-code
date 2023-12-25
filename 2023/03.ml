@@ -5,7 +5,6 @@
 #require "pcre"
 
 open Pcre
-open Str
 
 let schematic = read_file "03.txt"
 

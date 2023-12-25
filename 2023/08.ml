@@ -5,7 +5,6 @@
 #require "pcre"
 
 open Pcre
-open Str
 module StringMap = Map.Make (String)
 
 exception Break1 of int

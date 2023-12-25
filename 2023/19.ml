@@ -5,7 +5,6 @@
 #require "pcre"
 
 open Pcre
-open Str
 module CharMap = Map.Make (Char)
 module StringMap = Map.Make (String)
 

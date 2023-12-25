@@ -5,7 +5,6 @@
 #require "pcre"
 
 open Pcre
-open Str
 
 let () =
   let hash s =

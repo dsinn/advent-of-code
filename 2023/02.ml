@@ -4,7 +4,6 @@
 
 #require "pcre"
 
-open Str
 module StringMap = Map.Make (String)
 
 let get_colour_counts line =

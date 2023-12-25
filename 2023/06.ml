@@ -2,8 +2,6 @@
 
 #use "helpers.ml"
 
-open Str
-
 let race_product races =
   List.fold_left
     (fun product (time, distance_to_beat) ->

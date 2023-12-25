@@ -14,8 +14,6 @@
    ;;
 *)
 
-open Str
-
 type row =
   { conditions : string
   ; damage_groups : int list

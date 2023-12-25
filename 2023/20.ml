@@ -2,8 +2,6 @@
 
 #use "helpers.ml"
 
-open Str
-
 type pulse_amplitude =
   | High
   | Low

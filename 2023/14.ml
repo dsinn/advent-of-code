@@ -5,7 +5,6 @@
 #require "pcre"
 
 open Pcre
-open Str
 
 let rotate_clockwise s =
   let total_length = String.length s in
