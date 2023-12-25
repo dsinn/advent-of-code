@@ -32,8 +32,8 @@ let () =
            (* Hack for the schematic starting with a part number *)
            (if pos = -1 then "." ^ schematic else Str.string_after schematic pos)
            |> Pcre.pmatch ~rex:symbol_rex)
-         |> (fun has_adjacent_symbol ->
-           sum + if has_adjacent_symbol then int_of_string number_string else 0))
+         |> fun has_adjacent_symbol ->
+         sum + if has_adjacent_symbol then int_of_string number_string else 0)
        0
   |> Printf.printf "Part 1: %d\n"
 ;;
@@ -80,9 +80,9 @@ let () =
           with
           | Break -> [])
          |> (fun adjacent_numbers ->
-           if List.length adjacent_numbers = 2
-           then List.reduce ( * ) adjacent_numbers
-           else 0)
+              if List.length adjacent_numbers = 2
+              then List.reduce ( * ) adjacent_numbers
+              else 0)
          |> ( + ) sum)
        0
   |> Printf.printf "Part 2: %d\n"

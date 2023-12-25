@@ -103,7 +103,7 @@ let () =
   List.map (compute_period_and_valid_steps directions map) starting_nodes
   |> List.fold_left
        (fun product (period, _) -> Big_int.big_int_of_int period |> lcm product)
-       (Big_int.one)
+       Big_int.one
   |> Big_int.to_string
   |> Printf.printf "Part 2: %s\n"
 ;;

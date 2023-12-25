@@ -188,12 +188,10 @@ let () =
           deps @ get_conj_deps conj_module#name amplitude' module_map dest_input_map)
         []
         direct_deps)
-    else [(module_name, amplitude)]
+    else [ module_name, amplitude ]
   in
   let module_map, dest_input_map = get_module_map_from_file "20.txt" in
-  let rx_deps =
-    get_conj_deps "rx" High module_map dest_input_map |> StringMap.of_list
-  in
+  let rx_deps = get_conj_deps "rx" High module_map dest_input_map |> StringMap.of_list in
   let rx_dep_count = StringMap.cardinal rx_deps in
   let conj_periods = Hashtbl.create rx_dep_count in
   try
@@ -206,8 +204,7 @@ let () =
              && not (Hashtbl.mem conj_periods pulse.source)
           then (
             Printf.printf "Period of %s = %d\n" pulse.source presses;
-            Hashtbl.add conj_periods pulse.source presses;
-          )
+            Hashtbl.add conj_periods pulse.source presses)
           else ())
         module_map
       |> ignore;
