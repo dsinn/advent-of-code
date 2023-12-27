@@ -50,26 +50,28 @@ let () =
   let edge_set =
     File.lines_of "25.txt"
     |> Enum.fold
-         (fun set_list line ->
+         (fun set line ->
            match String.split_on_char ':' line with
            | [ key; value_strings ] ->
              value_strings
              |> String.trim
              |> String.split_on_char ' '
              |> List.fold_left
-                  (fun set_list' value_string ->
-                    set_list' @ [ key, value_string; value_string, key ])
-                  set_list
+                  (fun set' value_string -> Set.add (key, value_string) set')
+                  set
            | _ -> failwith "Invalid mapping")
-         []
-    |> Set.of_list
+         Set.empty
   in
   let edge_hash = Hashtbl.create (Set.cardinal edge_set) in
   Set.iter
     (fun (u, v) ->
-      v :: Hashtbl.find_default edge_hash u [] |> Hashtbl.replace edge_hash u)
+      [ u, v; v, u ]
+      |> List.iter (fun (u', v') ->
+        v' :: Hashtbl.find_default edge_hash u' [] |> Hashtbl.replace edge_hash u'))
     edge_set;
-  let vertex_set = Set.fold (fun (u, _) set -> Set.add u set) edge_set Set.empty in
+  let vertex_set =
+    Set.fold (fun (u, v) set -> Set.add u set |> Set.add v) edge_set Set.empty
+  in
   let vertex_count = Set.cardinal vertex_set in
   "Warning: Not only do I use a Monte Carlo algorithm,\n"
   ^ "but my implementation is probably bugged so it only has a small chance of working.\n"
@@ -83,9 +85,12 @@ let () =
         let edges_to_cut =
           karger_edge_cuts vertex_set edge_set (Hashtbl.create vertex_count)
         in
-        if Set.cardinal edges_to_cut = 6
+        if Set.cardinal edges_to_cut = 3
         then (
-          Printf.printf "\nFound a cut with three wires after %d attempts.\n" iter;
+          Printf.printf
+            "\nFound a cut with three wires after %d attempt%s.\n"
+            iter
+            (if iter = 1 then "" else "s");
           raise (Break edges_to_cut));
         print_string ".";
         if iter mod 80 = 0 then print_newline ();
@@ -96,7 +101,9 @@ let () =
   in
   Set.iter
     (fun (u, v) ->
-      List.remove (Hashtbl.find edge_hash u) v |> Hashtbl.replace edge_hash u)
+      [ u, v; v, u ]
+      |> List.iter (fun (u', v') ->
+        List.remove (Hashtbl.find edge_hash u') v' |> Hashtbl.replace edge_hash u'))
     edges_to_cut;
   let starting_vertex = Set.choose vertex_set in
   count_connected_vertices
