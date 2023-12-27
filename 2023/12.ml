@@ -2,18 +2,6 @@
 
 #use "helpers.ml"
 
-(*
-   let nCr n r =
-   let fact x = Enum.range 0 ~until:x |> Enum.fold (fun product i -> product * i) 1 in
-   if n = r
-   then 1
-   else
-   Enum.range (r + 1) ~until:n
-   |> Enum.fold (fun product i -> product * i) 1
-   |> ( * ) (fact (n - r))
-   ;;
-*)
-
 type row =
   { conditions : string
   ; damage_groups : int list
@@ -46,43 +34,26 @@ let count_arrangements row =
     else (
       let result =
         let pos' = pos + 1 in
-        (* @TODO omg so much duplication *)
-        match row.conditions.[pos] with
-        | '#' ->
-          count
-            pos'
-            (damage_streak + 1)
-            rem_damage_groups
-            (rem_damaged - 1)
-            rem_operational
-        | '.' ->
+        let c = row.conditions.[pos] in
+        (if c = '#' || c = '?'
+         then
+           count
+             pos'
+             (damage_streak + 1)
+             rem_damage_groups
+             (rem_damaged - 1)
+             rem_operational
+         else 0)
+        +
+        if c = '.' || c = '?'
+        then
           if damage_streak > 0
           then
             if damage_streak = List.hd rem_damage_groups
             then count pos' 0 (List.tl rem_damage_groups) rem_damaged (rem_operational - 1)
             else 0
           else count pos' 0 rem_damage_groups rem_damaged (rem_operational - 1)
-        | '?' ->
-          count
-            pos'
-            (damage_streak + 1)
-            rem_damage_groups
-            (rem_damaged - 1)
-            rem_operational
-          +
-          if damage_streak > 0
-          then
-            if damage_streak = List.hd rem_damage_groups
-            then
-              count
-                (pos + 1)
-                0
-                (List.tl rem_damage_groups)
-                rem_damaged
-                (rem_operational - 1)
-            else 0
-          else count pos' 0 rem_damage_groups rem_damaged (rem_operational - 1)
-        | invalid_char -> Printf.sprintf "Invalid character: %c" invalid_char |> failwith
+        else 0
       in
       Hashtbl.add memo memo_key result;
       result)
