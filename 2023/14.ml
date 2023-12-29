@@ -4,8 +4,6 @@
 
 #require "pcre"
 
-open Pcre
-
 let rotate_clockwise s =
   let total_length = String.length s in
   let width = String.index_from s 0 '\n' + 1 in

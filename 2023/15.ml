@@ -4,8 +4,6 @@
 
 #require "pcre"
 
-open Pcre
-
 let () =
   let hash s =
     String.to_seq s

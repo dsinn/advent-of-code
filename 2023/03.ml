@@ -4,8 +4,6 @@
 
 #require "pcre"
 
-open Pcre
-
 let schematic = read_file "03.txt"
 
 (* Include "\n" for easier calculations ahead *)

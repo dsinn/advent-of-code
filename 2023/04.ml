@@ -2,8 +2,6 @@
 
 #use "helpers.ml"
 
-open Set
-
 let count_winners line =
   let winning_numbers, my_numbers =
     Str.split (Str.regexp " *[:|] *") line

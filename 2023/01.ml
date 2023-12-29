@@ -4,7 +4,6 @@
 
 #require "pcre"
 
-open Pcre
 module StringMap = Map.Make (String)
 
 let () =

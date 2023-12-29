@@ -4,8 +4,6 @@
 
 #require "pcre"
 
-open Pcre
-
 let transpose pattern =
   let src_rows = String.split_on_char '\n' pattern |> Array.of_list in
   let src_height = Array.length src_rows in
