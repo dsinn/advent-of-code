@@ -155,6 +155,13 @@ I would not be interested in using OCaml for AoC again until the syntax and type
 
 ## Other remarks
 
+* This was my first year using generative AI, namely [GitHub Copilot](https://github.com/features/copilot) and ChatGPT,
+  and while I specifically avoided using large swaths of code, I found them both to be good for learning new things.
+  * Copilot was generally only good for saving keystrokes by autocompleting syntax and method calls, but occasionally
+    it would generate some code that I was unfamiliar with and worth learning about (_e.g._, `Scanf` mentioned above).
+  * ChatGPT was good when I was stuck, as it sometimes just served as a rubber duck as I was working something out, and
+    other times it name-dropped something with which I wasn't familiar, but that I could then read up on and implement
+    myself (_i.e._, the aforementioned shoelace formula and Karger's algorithm).
 * [Day 12](https://adventofcode.com/2023/day/12): I kept thinking about a combinatorial approach that's similar to
   [2020 Day 10](https://adventofcode.com/2020/day/10) and
   [my solution](https://github.com/dsinn/advent-of-code/blob/d593401/2020/10.rb) for it, but ultimately I couldn't do it
