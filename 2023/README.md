@@ -62,7 +62,7 @@ and this admittedly _could_ be a reason for some of the OCaml lowlights ahead.
 * [Day 7](https://adventofcode.com/2023/day/7): I wasted time by not reading 🤦 and implemented poker rules for the
   ties, _e.g._, making `22999` win over `99222` because in poker, the three of the kind is used to break ties in a full
   house rather than the first card.
-* [Day 8](https://adventofcode.com/2023/day/8): I generally dislike puzzles where a (subjectively) interesting math
+* [Day 8](https://adventofcode.com/2023/day/8): I generally like puzzles where a (subjectively) interesting math
   problem is described, but then the input is crafted such that the interesting part is removed. In this case, not only
   does each ghost only land on a `Z` node at the end of their cycle, but each cycle effectively begins immediately since
   each `Z` node connects to the same nodes as the `A` node at which the ghost started. Therefore, you can skip almost
