@@ -8,7 +8,9 @@ I only started participating in 2020, so previous years' puzzles were done much 
 
 ✅ = Solutions for all 25 days of that year have been committed
 
-* [2023](https://adventofcode.com/2023): OCaml 5.1
+* [2023](https://adventofcode.com/2023): ✅ OCaml 5.1 with
+  [Batteries](https://github.com/ocaml-batteries-team/batteries-included) and
+  [PCRE](https://github.com/mmottl/pcre-ocaml)
 * [2022](https://adventofcode.com/2022): ✅ Scala 3.2 with [Ammonite](https://ammonite.io)
 * [2021](https://adventofcode.com/2021): Python 3.10
 * [2020](https://adventofcode.com/2020): ✅ Ruby 2.7
